@@ -5,69 +5,164 @@
     <title>My Gaming Hub</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
+            margin: 0;
             font-family: Arial, sans-serif;
             background: #111;
             color: white;
             text-align: center;
-            margin: 0;
         }
 
         header {
             background: #222;
-            padding: 25px;
+            padding: 30px 15px;
         }
 
         h1 {
-            margin: 0;
             font-size: 32px;
+            margin: 0 0 10px;
         }
 
-        .card {
-            background: #222;
+        .game {
             margin: 25px auto;
-            padding: 20px;
-            max-width: 500px;
+            padding: 25px;
+            max-width: 550px;
+            background: #222;
+            border-radius: 18px;
+        }
+
+        #gameArea {
+            margin: 20px auto;
+            height: 220px;
             border-radius: 15px;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            user-select: none;
         }
 
         button {
-            padding: 12px 25px;
+            padding: 14px 25px;
             border: none;
-            border-radius: 8px;
-            background: #00aaff;
+            border-radius: 10px;
+            background: #0099dd;
             color: white;
-            font-size: 16px;
+            font-size: 17px;
+            font-weight: bold;
         }
 
-        button:hover {
-            opacity: 0.8;
+        button:active {
+            transform: scale(0.96);
+        }
+
+        #result {
+            font-size: 20px;
+            margin-top: 20px;
         }
     </style>
 </head>
 
 <body>
 
-    <header>
-        <h1>🎮 MY GAMING HUB</h1>
-        <p>Welcome to my gaming website!</p>
-    </header>
+<header>
+    <h1>🎮 MY GAMING HUB</h1>
+    <p>Welcome to my gaming website!</p>
+</header>
 
-    <div class="card">
-        <h2>🏆 Gaming Leaderboard</h2>
+<div class="game">
 
-        <p>🥇 Player One — 1500 points</p>
-        <p>🥈 Player Two — 1200 points</p>
-        <p>🥉 Player Three — 900 points</p>
+    <h2>⚡ Reaction Challenge</h2>
 
-        <button onclick="showMessage()">Join the Game</button>
+    <p>
+        Tap START, wait for the screen to change,
+        then tap the game area as quickly as possible!
+    </p>
+
+    <button onclick="startGame()">START GAME</button>
+
+    <div id="gameArea">
+        Press START to begin
     </div>
 
-    <script>
-        function showMessage() {
-            alert("Welcome to the Gaming Hub! 🎮");
-        }
-    </script>
+    <div id="result">
+        Your score will appear here.
+    </div>
+
+</div>
+
+<script>
+
+let startTime;
+let timer;
+let waiting = false;
+
+function startGame() {
+
+    clearTimeout(timer);
+
+    waiting = true;
+
+    const area = document.getElementById("gameArea");
+
+    area.innerHTML = "⏳ WAIT...";
+    area.style.background = "#333";
+
+    const delay = Math.floor(Math.random() * 3000) + 2000;
+
+    timer = setTimeout(function() {
+
+        startTime = Date.now();
+
+        area.innerHTML = "🔥 TAP NOW!";
+        area.style.background = "#0099dd";
+
+        waiting = false;
+
+    }, delay);
+}
+
+
+document.getElementById("gameArea").addEventListener("click", function() {
+
+    const area = document.getElementById("gameArea");
+    const result = document.getElementById("result");
+
+    if (!waiting && startTime) {
+
+        const reactionTime = Date.now() - startTime;
+
+        result.innerHTML =
+            "⚡ Your reaction time: <strong>" +
+            reactionTime +
+            " ms</strong>";
+
+        area.innerHTML = "🎯 NICE!";
+
+        startTime = null;
+
+    } else if (waiting) {
+
+        clearTimeout(timer);
+
+        result.innerHTML =
+            "❌ Too early! Try again.";
+
+        area.innerHTML = "Try again 😁";
+
+        waiting = false;
+        startTime = null;
+    }
+
+});
+
+</script>
 
 </body>
 </html>
