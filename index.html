@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>My Gaming Hub — Phase 8</title>
+<title>My Gaming Hub — Phase 9</title>
 <style>
 :root{
   --bg:#0f0f0f;--card:#202020;--card2:#2d2d2d;--text:#f5f5f5;
@@ -174,6 +174,7 @@ footer{text-align:center;color:#888;padding:35px 15px}
     <button onclick="go('leaderboard')">🥇 Leaderboard</button>
     <button onclick="go('phase6')">🚀 Phase 6</button>
     <button onclick="go('phase8')">🌐 Phase 8</button>
+    <button onclick="go('phase9')">👤 Phase 9</button>
   </div>
 </nav>
 
@@ -330,6 +331,32 @@ footer{text-align:center;color:#888;padding:35px 15px}
 </section>
 
 
+<section id="phase9">
+  <div class="card arcade-hero">
+    <span class="arcade-badge">PHASE 9 • PLAYER PROFILES</span>
+    <h2 style="margin-top:10px">👤 Profile Center</h2>
+    <p class="muted">Create and switch between local player profiles on this device. No passwords or private account data are stored.</p>
+  </div>
+  <div class="card">
+    <h2>➕ Create / Save Profile</h2>
+    <input id="profileNameInput" maxlength="20" placeholder="Profile name">
+    <button class="btn" onclick="saveProfileSlot()">SAVE PROFILE</button>
+    <p class="small muted">Saving a profile stores its current game progress locally on this device.</p>
+  </div>
+  <div class="card">
+    <h2>🔄 Your Profiles</h2>
+    <div id="profileList"></div>
+  </div>
+  <div class="card">
+    <h2>🛡️ Privacy Note</h2>
+    <ul class="muted">
+      <li>Profiles are stored only in this browser's local storage.</li>
+      <li>This is not a real online account system yet.</li>
+      <li>Never store passwords, recovery codes, or private secrets in this website.</li>
+    </ul>
+  </div>
+</section>
+
 <section id="phase8">
   <div class="card arcade-hero">
     <span class="arcade-badge">PHASE 8 • ONLINE READY</span>
@@ -461,7 +488,7 @@ footer{text-align:center;color:#888;padding:35px 15px}
 </section>
 
 </main>
-<footer>🎮 My Gaming Hub • Phase 7</footer>
+<footer>🎮 My Gaming Hub • Phase 9</footer>
 <div id="toast" class="toast"></div>
 
 <script>
@@ -481,6 +508,8 @@ data.missions=data.missions||{};
 data.missionDate=data.missionDate||"";
 data.spinDate=data.spinDate||"";
 data.ideas=data.ideas||[];
+data.profiles=data.profiles||[];
+data.activeProfile=data.activeProfile||"";
 data.settings=Object.assign({sound:true,vibration:true,theme:"dark"},data.settings||{});
 function save(){localStorage.setItem(KEY,JSON.stringify(data));render()}
 function go(id){document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"})}
@@ -533,7 +562,7 @@ function render(){
   document.getElementById("comboValue").textContent=data.combo||0;
   document.getElementById("bestColor").textContent=data.bestColor||0;
   document.getElementById("bestSequence").textContent=data.bestSequence||0;
-  renderHistory();renderBadges();renderLeaderboard();renderDaily();renderSettings();renderMissions();renderIdeas();applyTheme();
+  renderHistory();renderBadges();renderLeaderboard();renderDaily();renderSettings();renderMissions();renderIdeas();renderProfiles();applyTheme();
 }
 let reactionLast=null,reactionTimer=null,reactionStartTime=0,reactionState="idle";
 function startReaction(){go("reactionGame")}
@@ -993,6 +1022,53 @@ async function submitOnlineScore(){
     await loadOnlineLeaderboard();
   }catch(e){setOnlineStatus("Score was not submitted. Check the backend and CORS settings.");toast("Online submission unavailable.");}
 }
+
+function profileSnapshot(){
+  const copy=JSON.parse(JSON.stringify(data));
+  delete copy.profiles; delete copy.activeProfile;
+  return copy;
+}
+function saveProfileSlot(){
+  const input=document.getElementById("profileNameInput");
+  const name=(input?.value||data.name||"").trim().slice(0,20);
+  if(!name)return toast("Enter a profile name first!");
+  data.profiles=data.profiles||[];
+  const existing=data.profiles.find(p=>p.name.toLowerCase()===name.toLowerCase());
+  const snapshot=profileSnapshot();
+  if(existing){ existing.data=snapshot; data.activeProfile=existing.name; }
+  else { data.profiles.push({name,data:snapshot}); data.activeProfile=name; }
+  save();
+  toast("Profile saved! 👤");
+}
+function loadProfileSlot(name){
+  const p=(data.profiles||[]).find(x=>x.name===name);
+  if(!p)return;
+  const profiles=data.profiles, active=name;
+  const restored=JSON.parse(JSON.stringify(p.data||{}));
+  data=Object.assign(data,restored);
+  data.profiles=profiles; data.activeProfile=active;
+  data.settings=Object.assign({sound:true,vibration:true,theme:"dark"},data.settings||{});
+  save(); toast("Switched to "+name+"! 🎮");
+}
+function deleteProfileSlot(name){
+  if((data.profiles||[]).length<=1)return toast("Keep at least one profile.");
+  if(!confirm("Delete the profile "+name+"?"))return;
+  data.profiles=data.profiles.filter(p=>p.name!==name);
+  if(data.activeProfile===name){
+    const next=data.profiles[0];
+    const profiles=data.profiles;
+    data=Object.assign(data,JSON.parse(JSON.stringify(next.data||{})));
+    data.profiles=profiles; data.activeProfile=next.name;
+  }
+  save(); toast("Profile deleted.");
+}
+function renderProfiles(){
+  const box=document.getElementById("profileList"); if(!box)return;
+  const list=data.profiles||[];
+  if(!list.length){box.innerHTML='<p class="muted">No saved profiles yet.</p>';return;}
+  box.innerHTML=list.map(p=>`<div class="leader-row"><div><strong>${escapeHTML(p.name)}</strong><br><span class="muted small">${p.data?.points||0} points • Level ${p.data?.level||1}</span></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="btn secondary" onclick="loadProfileSlot('${escapeHTML(p.name)}')">${data.activeProfile===p.name?'ACTIVE':'SWITCH'}</button><button class="btn danger" onclick="deleteProfileSlot('${escapeHTML(p.name)}')">DELETE</button></div></div>`).join('');
+}
+
 function resetData(){
   if(!confirm("Reset all your gaming progress?"))return;
   localStorage.removeItem(KEY);location.reload();
