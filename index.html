@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#111111">
 <meta name="description" content="My Gaming Hub — a mobile-friendly arcade with challenges, profiles, achievements and online-ready leaderboards.">
 <meta name="theme-color" content="#111827">
-<title>My Gaming Hub — Phase 12</title>
+<title>My Gaming Hub — Phase 13</title>
 <style>
 :root{
   --bg:#0f0f0f;--card:#202020;--card2:#2d2d2d;--text:#f5f5f5;
@@ -185,6 +185,7 @@ button:focus-visible,.navbar button:focus-visible,input:focus-visible,textarea:f
     <button onclick="go('phase8')">🌐 Phase 8</button>
     <button onclick="go('phase9')">👤 Phase 9</button>
     <button onclick="go('phase10')">🏆 Phase 10</button>
+    <button onclick="go('phase13')">☁️ Phase 13</button>
   </div>
 </nav>
 
@@ -455,6 +456,37 @@ button:focus-visible,.navbar button:focus-visible,input:focus-visible,textarea:f
 </section>
 
 
+<section id="phase13">
+  <div class="card arcade-hero">
+    <span class="arcade-badge">PHASE 13 • SUPABASE CONNECTION</span>
+    <h2 style="margin-top:10px">☁️ Online Leaderboard</h2>
+    <p class="muted">Connect this Gaming Hub to your Supabase leaderboard. This version reads public scores only; score writing will be secured in a later step.</p>
+  </div>
+
+  <div class="card">
+    <h2>🔐 Supabase Setup</h2>
+    <p class="muted">Enter your Project URL and <strong>Publishable key</strong> on this device. Never use a Secret key here.</p>
+    <input id="supabaseUrl" maxlength="300" placeholder="https://your-project.supabase.co" autocomplete="off">
+    <input id="supabaseKey" maxlength="500" placeholder="sb_publishable_..." autocomplete="off" style="margin-top:10px">
+    <div class="grid" style="margin-top:12px">
+      <button class="btn" onclick="supabaseSaveConfig()">SAVE & CONNECT</button>
+      <button class="btn secondary" onclick="supabaseLoadLeaderboard()">REFRESH SCORES</button>
+      <button class="btn danger" onclick="supabaseClearConfig()">CLEAR LOCAL CONFIG</button>
+    </div>
+    <p id="supabaseStatus" class="result center">Not connected.</p>
+  </div>
+
+  <div class="card">
+    <h2>🏆 Supabase Top 20</h2>
+    <div id="supabaseBoard" class="history"><p class="muted">Connect Supabase to load shared scores.</p></div>
+  </div>
+
+  <div class="card">
+    <h2>🛡️ Safety Check</h2>
+    <p class="muted">Only the Publishable key belongs in a browser. Your Supabase Secret key must never be placed in this HTML file or GitHub repository.</p>
+  </div>
+</section>
+
 <section id="phase10">
   <div class="card arcade-hero">
     <span class="arcade-badge">PHASE 10 • ONLINE LEADERBOARD</span>
@@ -555,7 +587,7 @@ GET /leaderboard
   </div>
   <button onclick="toast('Your Gaming Hub is ready to launch! 🚀')">Run Final Check ✅</button>
 </section>
-<footer>🎮 My Gaming Hub • Phase 12 • Launch Edition</footer>
+<footer>🎮 My Gaming Hub • Phase 13 • Supabase Edition</footer>
 <div id="toast" class="toast"></div>
 
 <script>
@@ -568,7 +600,8 @@ let data=JSON.parse(localStorage.getItem(KEY)||"null")||{
   ],
   history:[], dailyDate:"", dailyDone:false, combo:0, bestColor:0, bestSequence:0,
   settings:{sound:true,vibration:true,theme:"dark"},
-  online:{endpoint:""}
+  online:{endpoint:""},
+  supabase:{url:"",key:""}
 };
 data.history=data.history||[];
 data.missions=data.missions||{};
@@ -578,6 +611,7 @@ data.ideas=data.ideas||[];
 data.profiles=data.profiles||[];
 data.activeProfile=data.activeProfile||"";
 data.settings=Object.assign({sound:true,vibration:true,theme:"dark"},data.settings||{});
+data.supabase=Object.assign({url:"",key:""},data.supabase||{});
 function save(){localStorage.setItem(KEY,JSON.stringify(data));render()}
 function go(id){document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"})}
 function toast(t){let e=document.getElementById("toast");e.textContent=t;e.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove("show"),2200)}
@@ -629,7 +663,7 @@ function render(){
   document.getElementById("comboValue").textContent=data.combo||0;
   document.getElementById("bestColor").textContent=data.bestColor||0;
   document.getElementById("bestSequence").textContent=data.bestSequence||0;
-  renderHistory();renderBadges();renderLeaderboard();renderDaily();renderSettings();renderMissions();renderIdeas();renderProfiles();applyTheme();
+  renderHistory();renderBadges();renderLeaderboard();renderDaily();renderSettings();renderMissions();renderIdeas();renderProfiles();renderSupabase();applyTheme();
 }
 let reactionLast=null,reactionTimer=null,reactionStartTime=0,reactionState="idle";
 function startReaction(){go("reactionGame")}
@@ -1136,6 +1170,49 @@ function renderProfiles(){
   box.innerHTML=list.map(p=>`<div class="leader-row"><div><strong>${escapeHTML(p.name)}</strong><br><span class="muted small">${p.data?.points||0} points • Level ${p.data?.level||1}</span></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="btn secondary" onclick="loadProfileSlot('${escapeHTML(p.name)}')">${data.activeProfile===p.name?'ACTIVE':'SWITCH'}</button><button class="btn danger" onclick="deleteProfileSlot('${escapeHTML(p.name)}')">DELETE</button></div></div>`).join('');
 }
 
+
+function supabaseSetStatus(msg){const el=document.getElementById("supabaseStatus");if(el)el.textContent=msg;}
+function supabaseRender(rows){
+  const box=document.getElementById("supabaseBoard");if(!box)return;
+  const clean=(Array.isArray(rows)?rows:[]).filter(x=>x&&Number.isFinite(Number(x.score))).sort((a,b)=>Number(b.score)-Number(a.score)).slice(0,20);
+  if(!clean.length){box.innerHTML='<p class="muted">No public scores found yet.</p>';return;}
+  box.innerHTML=clean.map((x,i)=>`<div class="phase10-rank"><span><strong>#${i+1}</strong> ${escapeHTML(String(x.player||"Player"))}<br><span class="muted small">${x.created_at?escapeHTML(new Date(x.created_at).toLocaleString()):""}</span></span><strong>⭐ ${Number(x.score)||0}</strong></div>`).join("");
+}
+function supabaseSaveConfig(){
+  const url=(document.getElementById("supabaseUrl")?.value||"").trim().replace(/\/$/,"");
+  const key=(document.getElementById("supabaseKey")?.value||"").trim();
+  if(!/^https:\/\/[^\s]+\.supabase\.co$/.test(url)){return toast("Check your Supabase Project URL.");}
+  if(!key||(!key.startsWith("sb_publishable_")&&!key.startsWith("eyJ"))){return toast("Use your Supabase Publishable key.");}
+  data.supabase={url,key};save();supabaseSetStatus("Supabase settings saved on this device. 🔐");toast("Supabase connected! ☁️");
+  supabaseLoadLeaderboard();
+}
+async function supabaseLoadLeaderboard(){
+  const url=(data.supabase?.url||document.getElementById("supabaseUrl")?.value||"").trim().replace(/\/$/,"");
+  const key=(data.supabase?.key||document.getElementById("supabaseKey")?.value||"").trim();
+  if(!url||!key)return toast("Enter and save your Supabase settings first.");
+  try{
+    supabaseSetStatus("Loading online scores… ⏳");
+    const endpoint=url+"/rest/v1/leaderboard?select=player,score,created_at&order=score.desc&limit=20";
+    const res=await fetch(endpoint,{headers:{apikey:key,Authorization:"Bearer "+key,Accept:"application/json"}});
+    if(!res.ok)throw Error("HTTP "+res.status);
+    const rows=await res.json();
+    supabaseRender(rows);
+    supabaseSetStatus("Online leaderboard updated! 🏆");
+  }catch(e){
+    supabaseSetStatus("Could not load Supabase scores. Check the URL, key and RLS policy.");
+    toast("Supabase connection failed.");
+  }
+}
+function supabaseClearConfig(){
+  data.supabase={url:"",key:""};save();
+  const u=document.getElementById("supabaseUrl"),k=document.getElementById("supabaseKey");if(u)u.value="";if(k)k.value="";
+  supabaseSetStatus("Supabase settings cleared. Local mode active.");toast("Supabase settings cleared.");
+}
+function renderSupabase(){
+  const u=document.getElementById("supabaseUrl"),k=document.getElementById("supabaseKey");
+  if(u)u.value=data.supabase?.url||"";
+  if(k)k.value=data.supabase?.key||"";
+}
 
 function phase10Endpoint(){
   return (data.online?.endpoint||document.getElementById("phase10Endpoint")?.value||"").trim();
