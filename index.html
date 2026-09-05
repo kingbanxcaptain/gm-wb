@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>My Gaming Hub</title>
 
     <style>
@@ -12,59 +14,135 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #111;
+            background: #101010;
             color: white;
-            text-align: center;
         }
 
         header {
+            text-align: center;
+            padding: 35px 15px;
             background: #222;
-            padding: 30px 15px;
         }
 
-        h1 {
-            font-size: 32px;
+        header h1 {
+            font-size: 34px;
             margin: 0 0 10px;
         }
 
-        .game {
-            margin: 25px auto;
-            padding: 25px;
-            max-width: 550px;
-            background: #222;
-            border-radius: 18px;
+        header p {
+            font-size: 18px;
+            margin: 0;
         }
 
-        #gameArea {
-            margin: 20px auto;
-            height: 220px;
-            border-radius: 15px;
-            background: #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
-            user-select: none;
+        .container {
+            width: 92%;
+            max-width: 600px;
+            margin: 25px auto;
+        }
+
+        .card {
+            background: #222;
+            padding: 25px;
+            border-radius: 18px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        input {
+            width: 90%;
+            max-width: 350px;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            margin: 10px;
+            font-size: 16px;
         }
 
         button {
-            padding: 14px 25px;
+            padding: 14px 24px;
             border: none;
             border-radius: 10px;
             background: #0099dd;
             color: white;
             font-size: 17px;
             font-weight: bold;
+            cursor: pointer;
+            margin: 6px;
         }
 
         button:active {
             transform: scale(0.96);
         }
 
+        .reset {
+            background: #555;
+        }
+
+        #gameArea {
+            height: 230px;
+            margin: 20px auto;
+            border-radius: 18px;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+        }
+
         #result {
             font-size: 20px;
-            margin-top: 20px;
+            margin: 15px 0;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            background: #333;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 5px;
+            min-width: 120px;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 24px;
+            margin-top: 5px;
+        }
+
+        ol {
+            text-align: left;
+            max-width: 350px;
+            margin: auto;
+            padding-left: 45px;
+        }
+
+        li {
+            padding: 10px;
+            font-size: 18px;
+        }
+
+        .empty {
+            color: #aaa;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #888;
         }
     </style>
 </head>
@@ -73,94 +151,355 @@
 
 <header>
     <h1>🎮 MY GAMING HUB</h1>
-    <p>Welcome to my gaming website!</p>
+    <p>Test your speed. Beat your best score. 🏆</p>
 </header>
 
-<div class="game">
+<div class="container">
 
-    <h2>⚡ Reaction Challenge</h2>
+    <!-- PLAYER -->
+    <div class="card">
+        <h2>👤 Player</h2>
 
-    <p>
-        Tap START, wait for the screen to change,
-        then tap the game area as quickly as possible!
-    </p>
+        <input
+            type="text"
+            id="playerName"
+            placeholder="Enter your gaming name"
+            maxlength="20"
+        >
 
-    <button onclick="startGame()">START GAME</button>
-
-    <div id="gameArea">
-        Press START to begin
+        <p id="welcome"></p>
     </div>
 
-    <div id="result">
-        Your score will appear here.
+
+    <!-- GAME -->
+    <div class="card">
+
+        <h2>⚡ Reaction Challenge</h2>
+
+        <p>
+            Tap START, wait for the signal,
+            then tap the game area as quickly as possible!
+        </p>
+
+        <button onclick="startGame()">START GAME</button>
+
+        <div id="gameArea">
+            Press START to begin 🎮
+        </div>
+
+        <div id="result">
+            Your reaction time will appear here.
+        </div>
+
+        <div class="stats">
+
+            <div class="stat">
+                🏆 Best
+                <strong id="bestScore">--</strong>
+            </div>
+
+            <div class="stat">
+                🎯 Rounds
+                <strong id="rounds">0</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- LEADERBOARD -->
+    <div class="card">
+
+        <h2>🏆 Top 5 Scores</h2>
+
+        <ol id="leaderboard">
+            <li class="empty">No scores yet. Be the first!</li>
+        </ol>
+
+        <button class="reset" onclick="resetScores()">
+            🗑️ Reset Scores
+        </button>
+
     </div>
 
 </div>
 
+<footer>
+    🎮 My Gaming Hub © 2026
+</footer>
+
+
 <script>
 
-let startTime;
-let timer;
-let waiting = false;
+    let startTime = null;
+    let timer = null;
+    let waiting = false;
 
-function startGame() {
-
-    clearTimeout(timer);
-
-    waiting = true;
-
-    const area = document.getElementById("gameArea");
-
-    area.innerHTML = "⏳ WAIT...";
-    area.style.background = "#333";
-
-    const delay = Math.floor(Math.random() * 3000) + 2000;
-
-    timer = setTimeout(function() {
-
-        startTime = Date.now();
-
-        area.innerHTML = "🔥 TAP NOW!";
-        area.style.background = "#0099dd";
-
-        waiting = false;
-
-    }, delay);
-}
-
-
-document.getElementById("gameArea").addEventListener("click", function() {
-
-    const area = document.getElementById("gameArea");
+    const nameInput = document.getElementById("playerName");
+    const gameArea = document.getElementById("gameArea");
     const result = document.getElementById("result");
+    const bestScore = document.getElementById("bestScore");
+    const roundsDisplay = document.getElementById("rounds");
+    const leaderboard = document.getElementById("leaderboard");
+    const welcome = document.getElementById("welcome");
 
-    if (!waiting && startTime) {
 
-        const reactionTime = Date.now() - startTime;
+    // Load saved player name
+    const savedName = localStorage.getItem("gamingPlayerName");
 
-        result.innerHTML =
-            "⚡ Your reaction time: <strong>" +
-            reactionTime +
-            " ms</strong>";
+    if (savedName) {
+        nameInput.value = savedName;
+        welcome.innerHTML = "Welcome back, <strong>" + savedName + "</strong>! 👋";
+    }
 
-        area.innerHTML = "🎯 NICE!";
 
-        startTime = null;
+    // Save player name when typing
+    nameInput.addEventListener("input", function() {
 
-    } else if (waiting) {
+        const name = nameInput.value.trim();
+
+        localStorage.setItem("gamingPlayerName", name);
+
+        if (name) {
+            welcome.innerHTML =
+                "Ready to play, <strong>" + name + "</strong>! 🎮";
+        } else {
+            welcome.innerHTML = "";
+        }
+    });
+
+
+    // Get saved scores
+    function getScores() {
+
+        return JSON.parse(
+            localStorage.getItem("gamingScores") || "[]"
+        );
+
+    }
+
+
+    // Save scores
+    function saveScores(scores) {
+
+        localStorage.setItem(
+            "gamingScores",
+            JSON.stringify(scores)
+        );
+
+    }
+
+
+    // Start game
+    function startGame() {
+
+        const name = nameInput.value.trim();
+
+        if (!name) {
+
+            alert("Please enter your gaming name first! 👤");
+
+            nameInput.focus();
+
+            return;
+        }
+
 
         clearTimeout(timer);
 
-        result.innerHTML =
-            "❌ Too early! Try again.";
-
-        area.innerHTML = "Try again 😁";
-
-        waiting = false;
+        waiting = true;
         startTime = null;
+
+        gameArea.innerHTML = "⏳ WAIT...";
+        gameArea.style.background = "#333";
+
+        result.innerHTML = "Don't tap yet!";
+
+
+        // Random delay between 2 and 5 seconds
+        const delay =
+            Math.floor(Math.random() * 3000) + 2000;
+
+
+        timer = setTimeout(function() {
+
+            startTime = Date.now();
+
+            waiting = false;
+
+            gameArea.innerHTML = "🔥 TAP NOW!";
+            gameArea.style.background = "#0099dd";
+
+        }, delay);
+
     }
 
-});
+
+    // Game area click
+    gameArea.addEventListener("click", function() {
+
+        // Player tapped too early
+        if (waiting) {
+
+            clearTimeout(timer);
+
+            waiting = false;
+            startTime = null;
+
+            gameArea.innerHTML = "❌ TOO EARLY!";
+
+            result.innerHTML =
+                "You tapped too soon. Try again! 😁";
+
+            gameArea.style.background = "#333";
+
+            return;
+        }
+
+
+        // No active game
+        if (!startTime) {
+
+            return;
+
+        }
+
+
+        // Calculate reaction time
+        const reactionTime =
+            Date.now() - startTime;
+
+
+        const name =
+            nameInput.value.trim();
+
+
+        gameArea.innerHTML = "🎯 NICE!";
+
+        result.innerHTML =
+            "⚡ <strong>" +
+            reactionTime +
+            " ms</strong>";
+
+
+        gameArea.style.background = "#0099dd";
+
+
+        // Save score
+        const scores = getScores();
+
+        scores.push({
+
+            name: name,
+
+            score: reactionTime,
+
+            date: new Date().toLocaleDateString()
+
+        });
+
+
+        // Sort fastest first
+        scores.sort(function(a, b) {
+
+            return a.score - b.score;
+
+        });
+
+
+        // Keep top 5
+        const topScores =
+            scores.slice(0, 5);
+
+
+        saveScores(topScores);
+
+
+        startTime = null;
+
+
+        updateLeaderboard();
+
+    });
+
+
+    // Update leaderboard
+    function updateLeaderboard() {
+
+        const scores = getScores();
+
+        leaderboard.innerHTML = "";
+
+
+        if (scores.length === 0) {
+
+            leaderboard.innerHTML =
+                '<li class="empty">No scores yet. Be the first!</li>';
+
+            bestScore.innerHTML = "--";
+
+            roundsDisplay.innerHTML = "0";
+
+            return;
+
+        }
+
+
+        scores.forEach(function(item, index) {
+
+            const li =
+                document.createElement("li");
+
+            li.innerHTML =
+                "<strong>" +
+                item.name +
+                "</strong> — " +
+                item.score +
+                " ms";
+
+            leaderboard.appendChild(li);
+
+        });
+
+
+        // Best score
+        bestScore.innerHTML =
+            scores[0].score + " ms";
+
+
+        // Number of saved scores
+        roundsDisplay.innerHTML =
+            scores.length;
+
+    }
+
+
+    // Reset leaderboard
+    function resetScores() {
+
+        const confirmReset =
+            confirm(
+                "Are you sure you want to delete all scores?"
+            );
+
+
+        if (confirmReset) {
+
+            localStorage.removeItem("gamingScores");
+
+            updateLeaderboard();
+
+            result.innerHTML =
+                "Scores have been reset.";
+
+        }
+
+    }
+
+
+    // Load leaderboard when page opens
+    updateLeaderboard();
 
 </script>
 
