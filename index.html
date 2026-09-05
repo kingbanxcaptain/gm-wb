@@ -2,1417 +2,913 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>My Gaming Hub</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<title>My Gaming Hub — Phase 7</title>
 <style>
-* {
-  box-sizing: border-box;
+:root{
+  --bg:#0f0f0f;--card:#202020;--card2:#2d2d2d;--text:#f5f5f5;
+  --muted:#bdbdbd;--accent:#08a8e8;--accent2:#087fba;--success:#20c76b;
+  --danger:#ef5350;--gold:#ffd54f;--shadow:0 12px 30px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;line-height:1.45;
+}
+button,input{font:inherit}
+button{cursor:pointer;border:0}
+.container{width:min(1100px,94%);margin:auto}
+.hero{
+  padding:34px 18px 30px;text-align:center;background:#222;
+  border-bottom:1px solid #333;
+}
+.hero h1{font-size:clamp(2rem,7vw,4rem);margin:0 0 8px;font-weight:800}
+.hero p{margin:0;color:#ddd;font-size:clamp(1rem,3.5vw,1.35rem)}
+nav{
+  position:sticky;top:0;z-index:20;background:rgba(15,15,15,.95);
+  backdrop-filter:blur(10px);border-bottom:1px solid #292929;
+}
+.navbar{display:flex;gap:8px;overflow-x:auto;padding:10px 0}
+.navbar button{
+  flex:0 0 auto;background:#292929;color:#eee;padding:10px 14px;
+  border-radius:999px;font-weight:700
+}
+.navbar button:hover{background:#3a3a3a}
+section{padding:24px 0}
+.card{
+  background:var(--card);border-radius:28px;padding:24px;margin:18px 0;
+  box-shadow:var(--shadow);border:1px solid #292929;
+}
+h2{font-size:clamp(1.65rem,6vw,2.5rem);margin:0 0 14px}
+h3{margin:0 0 8px}
+.muted{color:var(--muted)}
+.btn{
+  background:var(--accent);color:white;border-radius:14px;
+  padding:14px 22px;font-weight:800;transition:.15s transform,.15s background;
+}
+.btn:hover{background:#0bb5f5;transform:translateY(-1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn.secondary{background:#383838}
+.btn.danger{background:#8e2727}
+input{
+  width:100%;padding:16px 18px;border-radius:14px;border:1px solid #555;
+  background:#fff;color:#111;outline:none;margin:8px 0 12px;
+}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(8,168,232,.2)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.stat{
+  background:var(--card2);padding:20px;border-radius:20px;text-align:center;
+}
+.stat .value{font-size:2rem;font-weight:900;margin-top:5px}
+.game-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.game{
+  background:var(--card2);padding:20px;border-radius:22px;
+  border:1px solid transparent;transition:.2s transform,.2s border;
+}
+.game:hover{transform:translateY(-3px);border-color:var(--accent)}
+.game .emoji{font-size:2.5rem}.game p{color:#ccc;min-height:48px}
+.progress{height:16px;background:#393939;border-radius:99px;overflow:hidden}
+.progress>div{height:100%;background:var(--accent);width:0;transition:width .3s}
+.challenge{
+  min-height:230px;border-radius:22px;background:var(--accent);
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  font-size:2rem;font-weight:900;user-select:none;touch-action:manipulation;
+}
+.challenge.wait{background:#8b6a00}.challenge.go{background:var(--success)}
+.challenge.bad{background:var(--danger)}
+.center{text-align:center}
+.result{font-size:1.3rem;font-weight:800;margin-top:12px;min-height:30px}
+.tap-count{font-size:4rem;font-weight:900;text-align:center;margin:15px 0}
+.memory{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:520px;margin:18px auto
+}
+.tile{
+  aspect-ratio:1;background:#343434;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;min-height:65px;
+}
+.tile.revealed,.tile.matched{background:#0d8fc7}
+.tile.matched{opacity:.65}
+.leader-row{
+  display:flex;justify-content:space-between;align-items:center;
+  background:#303030;padding:15px 18px;border-radius:16px;margin:8px 0
+}
+.badges{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.badge{background:#303030;border-radius:20px;padding:18px;text-align:center;border:2px solid #333}
+.badge.unlocked{border-color:var(--accent)}
+.badge.locked{opacity:.45}
+.badge .big{font-size:2.7rem}
+.toast{
+  position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);
+  background:#fff;color:#111;padding:13px 18px;border-radius:14px;
+  font-weight:800;opacity:0;pointer-events:none;z-index:50;transition:.25s
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+footer{text-align:center;color:#888;padding:35px 15px}
+.small{font-size:.9rem}
+@media(max-width:700px){
+  .grid,.grid3,.game-grid,.badges{grid-template-columns:1fr 1fr}
+  .card{padding:20px;border-radius:24px}
+}
+@media(max-width:480px){
+  .grid,.grid3,.game-grid,.badges{grid-template-columns:1fr}
+  .memory{grid-template-columns:repeat(4,1fr)}
+  .challenge{min-height:210px}
 }
 
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #101010;
-  color: white;
+.phase5-banner{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.daily-box{background:linear-gradient(135deg,#253341,#183f52);border:1px solid #27647d}
+.daily-title{font-size:1.15rem;font-weight:900}
+.pill{display:inline-block;background:#3a3a3a;border-radius:999px;padding:6px 10px;font-size:.85rem;font-weight:800}
+.history{max-height:330px;overflow:auto}
+.history-row{display:flex;justify-content:space-between;gap:10px;background:#303030;padding:12px 14px;border-radius:14px;margin:7px 0}
+.settings-row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#303030;padding:14px;border-radius:16px;margin:9px 0}
+.toggle{min-width:110px}
+.light{
+  --bg:#eef2f5;--card:#ffffff;--card2:#edf0f2;--text:#151515;--muted:#555;
+  --shadow:0 10px 24px rgba(0,0,0,.10)
 }
+.light nav{background:rgba(238,242,245,.94);border-color:#d6dadd}
+.light .hero{background:#fff;border-color:#ddd}
+.light .navbar button,.light .settings-row,.light .history-row,.light .stat,.light .game,.light .badge,.light .leader-row{background:#e2e6e9;color:#151515}
+.light .muted,.light .hero p{color:#555}
 
-header {
-  background: linear-gradient(135deg, #171717, #292929);
-  text-align: center;
-  padding: 35px 15px;
-  border-bottom: 2px solid #333;
-}
+.color-prompt{margin:18px 0;padding:24px;border-radius:18px;background:var(--card2);text-align:center;font-size:clamp(2rem,8vw,4rem);font-weight:900;letter-spacing:1px}
+.color-choices{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.color-choice{min-height:82px;border-radius:18px;color:#fff;font-weight:900;font-size:1.1rem;background:var(--accent);box-shadow:var(--shadow)}
+.color-choice:active{transform:scale(.97)}
+.sequence-board{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:520px;margin:18px auto}
+.sequence-tile{aspect-ratio:1;border-radius:18px;background:var(--card2);border:2px solid transparent;color:transparent;font-size:2rem;transition:.12s}
+.sequence-tile.active{background:var(--accent);border-color:#fff;transform:scale(.96)}
+.sequence-tile.flash{background:var(--success);border-color:#fff;color:#fff}
+.mini-stat{padding:12px 18px!important}
+@media(max-width:520px){.color-choices{grid-template-columns:1fr 1fr}.sequence-board{gap:8px}.color-choice{min-height:70px}}
 
-header h1 {
-  font-size: 40px;
-  margin: 0 0 10px;
-}
-
-header p {
-  color: #ddd;
-  font-size: 18px;
-}
-
-.container {
-  max-width: 950px;
-  margin: auto;
-  padding: 15px;
-}
-
-.card {
-  background: #202020;
-  border-radius: 22px;
-  padding: 25px 18px;
-  margin: 20px 0;
-  box-shadow: 0 5px 20px rgba(0,0,0,.3);
-}
-
-h2 {
-  text-align: center;
-  font-size: 30px;
-  margin-top: 0;
-}
-
-h3 {
-  font-size: 22px;
-}
-
-.description {
-  text-align: center;
-  color: #ddd;
-  line-height: 1.5;
-  font-size: 17px;
-}
-
-button {
-  display: inline-block;
-  border: none;
-  border-radius: 12px;
-  padding: 14px 22px;
-  margin: 8px;
-  background: #079ddd;
-  color: white;
-  font-size: 17px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-button:active {
-  transform: scale(.96);
-}
-
-input {
-  width: 90%;
-  max-width: 400px;
-  padding: 15px;
-  border: none;
-  border-radius: 10px;
-  font-size: 17px;
-  margin: 8px;
-}
-
-.center {
-  text-align: center;
-}
-
-.dashboard {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-}
-
-.stat {
-  background: #303030;
-  padding: 18px 8px;
-  border-radius: 15px;
-  text-align: center;
-}
-
-.stat span {
-  display: block;
-  font-size: 26px;
-  font-weight: bold;
-  margin-top: 7px;
-}
-
-.progress {
-  width: 100%;
-  height: 18px;
-  background: #3a3a3a;
-  border-radius: 20px;
-  overflow: hidden;
-  margin: 15px 0;
-}
-
-.progress-bar {
-  height: 100%;
-  width: 0%;
-  background: #079ddd;
-  transition: width .4s;
-}
-
-.game-area {
-  height: 250px;
-  width: 100%;
-  border-radius: 18px;
-  background: #078fca;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  font-size: 27px;
-  font-weight: bold;
-  margin: 18px 0;
-  user-select: none;
-  cursor: pointer;
-}
-
-.waiting {
-  background: #8c2525;
-}
-
-.ready {
-  background: #159447;
-}
-
-.memory-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  max-width: 500px;
-  margin: 20px auto;
-}
-
-.memory-card {
-  height: 75px;
-  background: #333;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 30px;
-  cursor: pointer;
-}
-
-.memory-card.flipped {
-  background: #079ddd;
-}
-
-.memory-card.matched {
-  background: #159447;
-}
-
-.big-number {
-  font-size: 55px;
-  font-weight: bold;
-  margin: 20px;
-}
-
-.achievement-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
-
-.badge {
-  background: #303030;
-  padding: 18px 8px;
-  border-radius: 15px;
-  text-align: center;
-  opacity: .45;
-}
-
-.badge.unlocked {
-  opacity: 1;
-  border: 2px solid #079ddd;
-}
-
-.badge-icon {
-  font-size: 35px;
-}
-
-.leaderboard {
-  max-width: 600px;
-  margin: auto;
-}
-
-.player {
-  background: #303030;
-  padding: 15px;
-  margin: 8px 0;
-  border-radius: 12px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.hidden {
-  display: none;
-}
-
-footer {
-  text-align: center;
-  padding: 35px;
-  color: #888;
-}
-
-@media (max-width: 650px) {
-
-  header h1 {
-    font-size: 31px;
-  }
-
-  .dashboard {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .achievement-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .game-area {
-    height: 220px;
-    font-size: 22px;
-  }
-
-  button {
-    width: 85%;
-  }
-
-  .memory-card {
-    height: 65px;
-  }
-}
+.arcade-hero{background:linear-gradient(135deg,#171717,#26343c);border:1px solid #31515e}
+.arcade-badge{display:inline-block;padding:7px 12px;border-radius:999px;background:#0b7da7;font-weight:900;font-size:.8rem}
+.mission{background:#303030;border-radius:18px;padding:16px;margin:10px 0}
+.mission.done{border:1px solid var(--success)}
+.mission-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.combo{font-size:1.05rem;font-weight:900}
+.spin-wheel{width:190px;height:190px;border-radius:50%;margin:20px auto;background:#343434;border:8px solid #555;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:900;transition:transform 1s cubic-bezier(.17,.67,.12,.99)}
+.spin-wheel.spinning{transform:rotate(1080deg)}
+.code-box{font-family:monospace;background:#111;border:1px solid #444;border-radius:15px;padding:15px;white-space:pre-wrap;word-break:break-word;text-align:left}
 </style>
 </head>
-
 <body>
-
-<header>
-
-<h1>🎮 MY GAMING HUB</h1>
-
-<p>Play. Score. Level Up.</p>
-
-<div id="welcomeText">
-  Welcome, Player!
-</div>
-
+<header class="hero">
+  <div class="container">
+    <h1>🎮 MY GAMING HUB</h1>
+    <p id="welcome">Welcome to my gaming website!</p>
+  </div>
 </header>
 
+<nav>
+  <div class="container navbar">
+    <button onclick="go('dashboard')">📊 Dashboard</button>
+    <button onclick="go('games')">🎮 Games</button>
+    <button onclick="go('achievements')">🏆 Achievements</button>
+    <button onclick="go('leaderboard')">🥇 Leaderboard</button>
+    <button onclick="go('phase6')">🚀 Phase 6</button>
+  </div>
+</nav>
 
-<div class="container">
+<main class="container">
 
+<section id="profile">
+  <div class="card">
+    <h2>👤 Player Profile</h2>
+    <input id="nameInput" maxlength="20" placeholder="Enter your gamer name">
+    <button class="btn" onclick="saveName()">SAVE NAME</button>
+  </div>
+</section>
 
-<!-- PLAYER PROFILE -->
-
-<section class="card">
-
-<h2>👤 Player Profile</h2>
-
-<div class="center">
-
-<input
-  id="nicknameInput"
-  type="text"
-  maxlength="15"
-  placeholder="Enter your nickname"
->
-
-<br>
-
-<button onclick="saveNickname()">
-  SAVE NAME
-</button>
-
-</div>
-
+<section id="dashboard">
+  <div class="card">
+    <h2>📊 Your Dashboard</h2>
+    <div class="grid">
+      <div class="stat">⭐ Points<div class="value" id="points">0</div></div>
+      <div class="stat">⚡ XP<div class="value" id="xp">0</div></div>
+      <div class="stat">🏅 Level<div class="value" id="level">1</div></div>
+      <div class="stat">🎮 Games<div class="value" id="gamesPlayed">0</div></div>
+      <div class="stat">🔥 Streak<div class="value" id="streak">0</div></div>
+      <div class="stat">⚡ Best Reaction<div class="value" id="bestReaction">--</div></div>
+    </div>
+    <h3 style="margin-top:22px">Level Progress</h3>
+    <div class="progress"><div id="xpBar"></div></div>
+    <p class="center muted" id="xpText">100 XP to next level</p>
+  </div>
 </section>
 
 
-<!-- DASHBOARD -->
+<section id="phase5">
+  <div class="card daily-box">
+    <div class="phase5-banner">
+      <div>
+        <span class="pill">PHASE 5</span>
+        <h2 style="margin-top:8px">🚀 Daily Challenge</h2>
+        <p id="dailyDescription" class="muted">A new challenge every day.</p>
+      </div>
+      <button id="dailyButton" class="btn" onclick="playDaily()">PLAY TODAY</button>
+    </div>
+    <div class="grid" style="margin-top:16px">
+      <div class="stat">📅 Day<div class="value" id="dailyDay">1</div></div>
+      <div class="stat">🎁 Bonus<div class="value">+100</div></div>
+    </div>
+    <div id="dailyResult" class="result center"></div>
+  </div>
 
-<section class="card">
+  <div class="card">
+    <h2>📈 Player Stats</h2>
+    <div class="grid3">
+      <div class="stat">🖱️ Total Clicks<div class="value" id="totalClicks">0</div></div>
+      <div class="stat">🧠 Memory Wins<div class="value" id="memoryWins">0</div></div>
+      <div class="stat">🔢 Guess Wins<div class="value" id="guessWins">0</div></div>
+    </div>
+  </div>
 
-<h2>📊 Your Dashboard</h2>
-
-<div class="dashboard">
-
-<div class="stat">
-  ⭐ Points
-  <span id="points">0</span>
-</div>
-
-<div class="stat">
-  ⚡ XP
-  <span id="xp">0</span>
-</div>
-
-<div class="stat">
-  🏅 Level
-  <span id="level">1</span>
-</div>
-
-<div class="stat">
-  🎮 Games
-  <span id="gamesPlayed">0</span>
-</div>
-
-</div>
-
-<h3>Level Progress</h3>
-
-<div class="progress">
-  <div id="xpBar" class="progress-bar"></div>
-</div>
-
-<p class="center">
-  <span id="xpNeeded">100</span> XP to next level
-</p>
-
+  <div class="card">
+    <h2>🕘 Recent Activity</h2>
+    <div id="history" class="history"></div>
+  </div>
 </section>
 
 
-<!-- REACTION GAME -->
+<section id="phase7">
+  <div class="card arcade-hero">
+    <span class="arcade-badge">PHASE 7 • ARCADE MODE</span>
+    <h2 style="margin-top:10px">🕹️ Daily Arcade</h2>
+    <p class="muted">New missions, a bonus wheel and a simple creator panel. Your existing progress stays on this device.</p>
+  </div>
 
-<section class="card">
+  <div class="card">
+    <h2>🎯 Daily Missions</h2>
+    <div id="missions"></div>
+  </div>
 
-<h2>⚡ Reaction Challenge</h2>
+  <div class="card center">
+    <h2>🎡 Bonus Wheel</h2>
+    <p class="muted">One free spin per day. The reward is added to your points and XP.</p>
+    <div id="wheel" class="spin-wheel">🎁</div>
+    <button id="spinButton" class="btn" onclick="spinWheel()">SPIN TODAY</button>
+    <div id="spinResult" class="result"></div>
+  </div>
 
-<p class="description">
-Tap START, wait for green, then tap the game area as quickly as possible.
-</p>
+  <div class="card">
+    <h2>🧑‍💻 Creator Corner</h2>
+    <p class="muted">A tiny place to keep your site's next idea. This is local to your browser.</p>
+    <input id="ideaInput" maxlength="120" placeholder="Example: Add a racing game">
+    <button class="btn" onclick="saveIdea()">SAVE IDEA</button>
+    <div id="ideaList"></div>
+  </div>
+</section>
 
-<div class="center">
+<section id="games">
+  <div class="card">
+    <h2>🎮 Game Zone</h2>
+    <div class="game-grid">
+      <div class="game"><div class="emoji">⚡</div><h3>Reaction Challenge</h3><p>Wait for green and tap as fast as possible.</p><button class="btn" onclick="startReaction()">PLAY</button></div>
+      <div class="game"><div class="emoji">🖱️</div><h3>Click Frenzy</h3><p>Get as many clicks as possible in 10 seconds.</p><button class="btn" onclick="startClickFrenzy()">PLAY</button></div>
+      <div class="game"><div class="emoji">👆</div><h3>Quick Tap</h3><p>Tap 20 times as quickly as you can.</p><button class="btn" onclick="startQuickTap()">PLAY</button></div>
+      <div class="game"><div class="emoji">🧠</div><h3>Memory Match</h3><p>Find every matching pair.</p><button class="btn" onclick="newMemory()">PLAY</button></div>
+      <div class="game"><div class="emoji">🔢</div><h3>Number Guess</h3><p>Guess the secret number between 1 and 20.</p><button class="btn" onclick="newGuess()">PLAY</button></div>
+    </div>
+  </div>
 
-<button onclick="startReaction()">
-START GAME
-</button>
+  <div class="card" id="reactionGame">
+    <h2>⚡ Reaction Challenge</h2>
+    <p class="center">Tap START, wait for green, then tap the game area as quickly as possible.</p>
+    <div class="center"><button class="btn" onclick="reactionStart()">START GAME</button></div>
+    <div id="reactionArea" class="challenge" onclick="reactionTap()">TAP START</div>
+    <div class="grid">
+      <div class="stat">🏆 Best<div class="value" id="reactionBest">--</div></div>
+      <div class="stat">🎯 Last<div class="value" id="reactionLast">--</div></div>
+    </div>
+    <div id="reactionResult" class="result center"></div>
+  </div>
 
-</div>
+  <div class="card" id="clickGame">
+    <h2>🖱️ Click Frenzy</h2>
+    <p class="center">You have 10 seconds. Get as many clicks as possible!</p>
+    <div class="center"><button id="clickStart" class="btn" onclick="clickStartGame()">START</button></div>
+    <div class="grid" style="margin-top:14px">
+      <div class="stat">⏱️ Time<div class="value" id="clickTime">10</div></div>
+      <div class="stat">🖱️ Clicks<div class="value" id="clickCount">0</div></div>
+    </div>
+    <button id="clickButton" class="btn" style="width:100%;margin-top:14px" onclick="doClick()">🖱️ CLICK!</button>
+    <div id="clickResult" class="result center"></div>
+  </div>
 
-<div
-  id="reactionArea"
-  class="game-area"
-  onclick="reactionClick()"
->
-TAP START
-</div>
+  <div class="card" id="quickGame">
+    <h2>👆 Quick Tap</h2>
+    <p class="center">Tap the button 20 times as quickly as you can!</p>
+    <div class="center"><button class="btn" onclick="quickStart()">START</button></div>
+    <div class="tap-count"><span id="tapCount">0</span> / 20</div>
+    <button id="tapButton" class="btn" style="width:100%" onclick="quickTap()">👆 TAP!</button>
+    <div id="quickResult" class="result center"></div>
+  </div>
 
-<div class="dashboard">
+  <div class="card" id="memoryGame">
+    <h2>🧠 Memory Match</h2>
+    <p class="center">Match all the pairs!</p>
+    <div class="center"><button class="btn" onclick="newMemory()">NEW GAME</button></div>
+    <div id="memoryBoard" class="memory"></div>
+    <div id="memoryResult" class="result center"></div>
+  </div>
 
-<div class="stat">
-  🏆 Best
-  <span id="bestReaction">--</span>
-</div>
-
-<div class="stat">
-  🎯 Last
-  <span id="lastReaction">--</span>
-</div>
-
-</div>
-
+  <div class="card" id="guessGame">
+    <h2>🔢 Number Guess</h2>
+    <p class="center">Guess the secret number between 1 and 20.</p>
+    <input id="guessInput" type="number" min="1" max="20" placeholder="Your guess">
+    <button class="btn" onclick="guessNumber()">GUESS</button>
+    <div id="guessResult" class="result center"></div>
+  </div>
 </section>
 
 
-<!-- CLICK GAME -->
+<section id="phase6">
+  <div class="card daily-box">
+    <div class="phase5-banner">
+      <div>
+        <span class="pill">PHASE 6</span>
+        <h2 style="margin-top:8px">🔥 Challenge Arena</h2>
+        <p class="muted">New skill games, combo bonuses and personal records.</p>
+      </div>
+      <div class="stat mini-stat">🔥 Combo<div class="value" id="comboValue">0</div></div>
+    </div>
+    <div class="grid" style="margin-top:16px">
+      <div class="game">
+        <div class="emoji">🎨</div><h3>Color Rush</h3>
+        <p>Tap the color named by the word. You have 30 seconds.</p>
+        <button class="btn" onclick="startColorRush()">PLAY</button>
+      </div>
+      <div class="game">
+        <div class="emoji">🧩</div><h3>Sequence Recall</h3>
+        <p>Watch the sequence, then repeat it from memory.</p>
+        <button class="btn" onclick="startSequence()">PLAY</button>
+      </div>
+    </div>
+    <div class="grid" style="margin-top:16px">
+      <div class="stat">🎨 Best Color<div class="value" id="bestColor">0</div></div>
+      <div class="stat">🧩 Best Sequence<div class="value" id="bestSequence">0</div></div>
+    </div>
+  </div>
 
-<section class="card">
+  <div class="card" id="colorGame">
+    <h2>🎨 Color Rush</h2>
+    <p class="center">Tap the button matching the <strong>word</strong>, not its text color.</p>
+    <div class="center"><button id="colorStart" class="btn" onclick="colorStartGame()">START</button></div>
+    <div class="stat center" style="margin-top:14px">⏱️ Time <span id="colorTime" class="value">30</span></div>
+    <div id="colorPrompt" class="color-prompt">READY?</div>
+    <div id="colorChoices" class="color-choices"></div>
+    <div id="colorResult" class="result center"></div>
+  </div>
 
-<h2>🖱️ Click Frenzy</h2>
-
-<p class="description">
-You have 10 seconds. Get as many clicks as possible!
-</p>
-
-<div class="center">
-
-<button onclick="startClickGame()">
-START
-</button>
-
-</div>
-
-<div class="dashboard">
-
-<div class="stat">
-  ⏱️ Time
-  <span id="clickTimer">10</span>
-</div>
-
-<div class="stat">
-  🖱️ Clicks
-  <span id="clickCount">0</span>
-</div>
-
-</div>
-
-<div class="center">
-
-<button onclick="clickButton()">
-🖱️ CLICK!
-</button>
-
-<p id="clickResult"></p>
-
-</div>
-
+  <div class="card" id="sequenceGame">
+    <h2>🧩 Sequence Recall</h2>
+    <p class="center">Watch the highlighted buttons, then repeat the sequence.</p>
+    <div class="center"><button id="sequenceStart" class="btn" onclick="sequenceStartGame()">START</button></div>
+    <div id="sequenceStatus" class="result center">Ready?</div>
+    <div id="sequenceBoard" class="sequence-board"></div>
+  </div>
 </section>
 
-
-<!-- NUMBER GUESS -->
-
-<section class="card">
-
-<h2>🔢 Number Guess</h2>
-
-<p class="description">
-Guess the secret number between 1 and 20.
-</p>
-
-<div class="center">
-
-<input
-  id="guessInput"
-  type="number"
-  min="1"
-  max="20"
-  placeholder="Your guess"
->
-
-<br>
-
-<button onclick="makeGuess()">
-GUESS
-</button>
-
-<p id="guessMessage">
-I'm thinking of a number...
-</p>
-
-</div>
-
+<section id="achievements">
+  <div class="card">
+    <h2>🏆 Achievements</h2>
+    <div id="badgeList" class="badges"></div>
+  </div>
 </section>
 
-
-<!-- QUICK TAP -->
-
-<section class="card">
-
-<h2>👆 Quick Tap</h2>
-
-<p class="description">
-Tap the button 20 times as quickly as you can!
-</p>
-
-<div class="center">
-
-<button onclick="startQuickTap()">
-START
-</button>
-
-<div class="big-number" id="tapCount">
-0 / 20
-</div>
-
-<button onclick="quickTap()">
-👆 TAP!
-</button>
-
-<p id="tapMessage"></p>
-
-</div>
-
+<section id="leaderboard">
+  <div class="card">
+    <h2 class="center">🥇 Local Leaderboard</h2>
+    <p class="center muted">Scores are stored on this device.</p>
+    <div id="leaderboardList"></div>
+    <div class="center" style="margin-top:18px">
+      <button class="btn secondary" onclick="addScore()">SAVE MY SCORE</button>
+    </div>
+  </div>
 </section>
 
-
-<!-- MEMORY GAME -->
-
-<section class="card">
-
-<h2>🧠 Memory Match</h2>
-
-<p class="description">
-Match all the pairs!
-</p>
-
-<div class="center">
-
-<button onclick="startMemoryGame()">
-NEW GAME
-</button>
-
-</div>
-
-<div id="memoryGrid" class="memory-grid"></div>
-
-<p id="memoryMessage" class="center"></p>
-
+<section>
+  <div class="card">
+    <h2>⚙️ Settings</h2>
+    <div class="settings-row">
+      <span>🔊 Game sounds</span>
+      <button id="soundToggle" class="btn secondary toggle" onclick="toggleSound()">ON</button>
+    </div>
+    <div class="settings-row">
+      <span>📳 Vibration</span>
+      <button id="vibrationToggle" class="btn secondary toggle" onclick="toggleVibration()">ON</button>
+    </div>
+    <div class="settings-row">
+      <span>🌙 Appearance</span>
+      <button id="themeToggle" class="btn secondary toggle" onclick="toggleTheme()">DARK</button>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+      <button class="btn secondary" onclick="shareProfile()">📤 SHARE PROFILE</button>
+      <button class="btn secondary" onclick="exportProgress()">💾 EXPORT</button>
+      <button class="btn secondary" onclick="importProgress()">📥 IMPORT</button>
+      <button class="btn danger" onclick="resetData()">RESET ALL PROGRESS</button>
+    </div>
+    <p class="small muted">Phase 6 adds the Challenge Arena, combo bonuses, new skill games and new achievements.</p>
+  </div>
 </section>
 
-
-<!-- ACHIEVEMENTS -->
-
-<section class="card">
-
-<h2>🏆 Achievements</h2>
-
-<div class="achievement-grid">
-
-<div id="achievement1" class="badge">
-<div class="badge-icon">🎮</div>
-<h3>First Game</h3>
-<p>Play your first game.</p>
-</div>
-
-<div id="achievement2" class="badge">
-<div class="badge-icon">⭐</div>
-<h3>100 Points</h3>
-<p>Earn 100 points.</p>
-</div>
-
-<div id="achievement3" class="badge">
-<div class="badge-icon">🔥</div>
-<h3>Gamer</h3>
-<p>Play 10 games.</p>
-</div>
-
-<div id="achievement4" class="badge">
-<div class="badge-icon">⚡</div>
-<h3>Fast Hands</h3>
-<p>Reaction under 400ms.</p>
-</div>
-
-<div id="achievement5" class="badge">
-<div class="badge-icon">🧠</div>
-<h3>Memory Master</h3>
-<p>Complete memory game.</p>
-</div>
-
-<div id="achievement6" class="badge">
-<div class="badge-icon">🏅</div>
-<h3>Level 5</h3>
-<p>Reach level 5.</p>
-</div>
-
-</div>
-
-</section>
-
-
-<!-- LEADERBOARD -->
-
-<section class="card">
-
-<h2>🥇 Local Leaderboard</h2>
-
-<div class="leaderboard">
-
-<div class="player">
-<span>🥇 Player One</span>
-<strong>1500</strong>
-</div>
-
-<div class="player">
-<span>🥈 Player Two</span>
-<strong>1200</strong>
-</div>
-
-<div class="player">
-<span>🥉 Player Three</span>
-<strong>900</strong>
-</div>
-
-<div class="player">
-<span>🎮 <span id="playerLeaderboardName">You</span></span>
-<strong id="playerLeaderboardScore">0</strong>
-</div>
-
-</div>
-
-<p class="description">
-Your score is saved on this device.
-</p>
-
-</section>
-
-
-<!-- RESET -->
-
-<section class="card">
-
-<div class="center">
-
-<h2>🔄 Player Controls</h2>
-
-<button onclick="resetEverything()">
-RESET ALL PROGRESS
-</button>
-
-</div>
-
-</section>
-
-
-</div>
-
-
-<footer>
-
-🎮 My Gaming Hub © 2026
-
-</footer>
-
+</main>
+<footer>🎮 My Gaming Hub • Phase 7</footer>
+<div id="toast" class="toast"></div>
 
 <script>
-
-/* ==========================================
-   PLAYER DATA
-========================================== */
-
-let playerName =
-localStorage.getItem("playerName") || "Player";
-
-let points =
-Number(localStorage.getItem("gamingPoints")) || 0;
-
-let xp =
-Number(localStorage.getItem("gamingXP")) || 0;
-
-let gamesPlayed =
-Number(localStorage.getItem("gamesPlayed")) || 0;
-
-let bestReaction =
-Number(localStorage.getItem("bestReaction")) || 0;
-
-
-/* ==========================================
-   DISPLAY PLAYER
-========================================== */
-
-document.getElementById("nicknameInput").value =
-playerName;
-
-
-/* ==========================================
-   SAVE NICKNAME
-========================================== */
-
-function saveNickname() {
-
-  let name =
-  document.getElementById("nicknameInput").value.trim();
-
-  if (name === "") {
-    alert("Please enter a nickname.");
+const KEY="gamingHubPhase4";
+let data=JSON.parse(localStorage.getItem(KEY)||"null")||{
+  name:"",points:0,xp:0,level:1,games:0,streak:0,lastDay:"",
+  bestReaction:null,totalClicks:0,quickBest:null,guessWins:0,memoryWins:0,
+  leaderboard:[
+    {name:"Player One",score:1500},{name:"Player Two",score:1200},{name:"Player Three",score:900}
+  ],
+  history:[], dailyDate:"", dailyDone:false, combo:0, bestColor:0, bestSequence:0,
+  settings:{sound:true,vibration:true,theme:"dark"}
+};
+data.history=data.history||[];
+data.missions=data.missions||{};
+data.missionDate=data.missionDate||"";
+data.spinDate=data.spinDate||"";
+data.ideas=data.ideas||[];
+data.settings=Object.assign({sound:true,vibration:true,theme:"dark"},data.settings||{});
+function save(){localStorage.setItem(KEY,JSON.stringify(data));render()}
+function go(id){document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"})}
+function toast(t){let e=document.getElementById("toast");e.textContent=t;e.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove("show"),2200)}
+function saveName(){
+  let n=document.getElementById("nameInput").value.trim();
+  if(!n)return toast("Enter a gamer name first!");
+  data.name=n;save();toast("Name saved! 🎮");
+}
+function addXP(x,p=x){
+  data.xp+=x;data.points+=p;
+  while(data.xp>=data.level*100){data.xp-=data.level*100;data.level++;toast("LEVEL UP! 🏆 Level "+data.level)}
+  save();
+}
+function countGame(gameName="Game"){
+  data.games++;
+  updateStreak();
+  if(typeof data.missionDate==="string"){
+    initMissionDay();
+  }
+  data.history.unshift({game:gameName,date:new Date().toLocaleString(),points:data.points});
+  data.history=data.history.slice(0,30);
+  beep("success");
+  vibrate(25);
+}
+function updateStreak(){
+  const today=new Date().toISOString().slice(0,10);
+  if(data.lastDay!==today){
+    const y=new Date();y.setDate(y.getDate()-1);
+    const yesterday=y.toISOString().slice(0,10);
+    data.streak=data.lastDay===yesterday?data.streak+1:1;
+    data.lastDay=today;
+  }
+}
+function render(){
+  document.getElementById("welcome").textContent=data.name?`Welcome, ${data.name}! 🎮`:"Welcome to my gaming website!";
+  document.getElementById("nameInput").value=data.name||"";
+  for(const [id,val] of Object.entries({
+    points:data.points,xp:data.xp,level:data.level,gamesPlayed:data.games,streak:data.streak,
+    bestReaction:data.bestReaction?data.bestReaction+" ms":"--",
+    reactionBest:data.bestReaction?data.bestReaction+" ms":"--",
+    reactionLast:reactionLast??"--"
+  })) if(document.getElementById(id))document.getElementById(id).textContent=val;
+  const need=data.level*100;
+  document.getElementById("xpBar").style.width=Math.min(100,data.xp/need*100)+"%";
+  document.getElementById("xpText").textContent=(need-data.xp)+" XP to next level";
+  document.getElementById("totalClicks").textContent=data.totalClicks||0;
+  document.getElementById("memoryWins").textContent=data.memoryWins||0;
+  document.getElementById("guessWins").textContent=data.guessWins||0;
+  document.getElementById("comboValue").textContent=data.combo||0;
+  document.getElementById("bestColor").textContent=data.bestColor||0;
+  document.getElementById("bestSequence").textContent=data.bestSequence||0;
+  renderHistory();renderBadges();renderLeaderboard();renderDaily();renderSettings();renderMissions();renderIdeas();applyTheme();
+}
+let reactionLast=null,reactionTimer=null,reactionStartTime=0,reactionState="idle";
+function startReaction(){go("reactionGame")}
+function reactionStart(){
+  clearTimeout(reactionTimer);reactionState="waiting";
+  const a=document.getElementById("reactionArea"),r=document.getElementById("reactionResult");
+  a.className="challenge wait";a.textContent="WAIT FOR GREEN...";
+  r.textContent="";
+  reactionTimer=setTimeout(()=>{
+    reactionState="go";reactionStartTime=performance.now();
+    a.className="challenge go";a.textContent="TAP NOW! 🟢";
+  },1000+Math.random()*3000);
+}
+function reactionTap(){
+  const a=document.getElementById("reactionArea"),r=document.getElementById("reactionResult");
+  if(reactionState==="waiting"){
+    clearTimeout(reactionTimer);reactionState="idle";a.className="challenge bad";a.textContent="TOO SOON!";
+    r.textContent="Wait for green and try again.";
     return;
   }
-
-  playerName = name;
-
-  localStorage.setItem(
-    "playerName",
-    playerName
-  );
-
-  updateDashboard();
-
-  alert("Nickname saved! 🎮");
+  if(reactionState!=="go")return;
+  const ms=Math.round(performance.now()-reactionStartTime);
+  reactionState="idle";reactionLast=ms;
+  if(!data.bestReaction||ms<data.bestReaction)data.bestReaction=ms;
+  countGame("Reaction Challenge");addXP(Math.max(5,Math.round(80-ms/10)),Math.max(10,Math.round(100-ms/5)));
+  a.className="challenge";a.textContent="🎯 NICE!";
+  r.textContent=`Your reaction time: ${ms} ms`; if(dailyGames[dailyIndex()]==="Reaction Challenge") claimDaily();
+  save();
 }
-
-
-/* ==========================================
-   ADD POINTS
-========================================== */
-
-function addPoints(amount) {
-
-  points += amount;
-
-  localStorage.setItem(
-    "gamingPoints",
-    points
-  );
-
-  updateDashboard();
-
-}
-
-
-/* ==========================================
-   ADD XP
-========================================== */
-
-function addXP(amount) {
-
-  xp += amount;
-
-  localStorage.setItem(
-    "gamingXP",
-    xp
-  );
-
-  updateDashboard();
-
-}
-
-
-/* ==========================================
-   RECORD GAME
-========================================== */
-
-function recordGame() {
-
-  gamesPlayed++;
-
-  localStorage.setItem(
-    "gamesPlayed",
-    gamesPlayed
-  );
-
-  addXP(10);
-
-  updateDashboard();
-
-}
-
-
-/* ==========================================
-   LEVEL SYSTEM
-========================================== */
-
-function getLevel() {
-
-  return Math.floor(xp / 100) + 1;
-
-}
-
-
-/* ==========================================
-   UPDATE DASHBOARD
-========================================== */
-
-function updateDashboard() {
-
-  let level =
-  getLevel();
-
-  let currentXP =
-  xp % 100;
-
-  let needed =
-  100 - currentXP;
-
-  document.getElementById("welcomeText")
-    .textContent =
-    "Welcome, " + playerName + "! 🎮";
-
-  document.getElementById("points")
-    .textContent =
-    points;
-
-  document.getElementById("xp")
-    .textContent =
-    xp;
-
-  document.getElementById("level")
-    .textContent =
-    level;
-
-  document.getElementById("gamesPlayed")
-    .textContent =
-    gamesPlayed;
-
-  document.getElementById("xpNeeded")
-    .textContent =
-    needed;
-
-  document.getElementById("xpBar")
-    .style.width =
-    currentXP + "%";
-
-  document.getElementById("playerLeaderboardName")
-    .textContent =
-    playerName;
-
-  document.getElementById("playerLeaderboardScore")
-    .textContent =
-    points;
-
-  if (bestReaction > 0) {
-
-    document.getElementById("bestReaction")
-      .textContent =
-      bestReaction + " ms";
-
-  }
-
-  updateAchievements();
-
-}
-
-
-/* ==========================================
-   REACTION GAME
-========================================== */
-
-let reactionStart = 0;
-let reactionTimer = null;
-let reactionWaiting = false;
-
-function startReaction() {
-
-  clearTimeout(reactionTimer);
-
-  let area =
-  document.getElementById("reactionArea");
-
-  reactionStart = 0;
-  reactionWaiting = true;
-
-  area.className =
-  "game-area waiting";
-
-  area.textContent =
-  "🔴 WAIT...";
-
-  let delay =
-  Math.floor(Math.random() * 3000) + 1500;
-
-  reactionTimer =
-  setTimeout(function() {
-
-    reactionStart =
-    Date.now();
-
-    area.className =
-    "game-area ready";
-
-    area.textContent =
-    "🟢 TAP NOW!";
-
-  }, delay);
-
-}
-
-
-function reactionClick() {
-
-  if (!reactionWaiting) {
-    return;
-  }
-
-  let area =
-  document.getElementById("reactionArea");
-
-  if (reactionStart === 0) {
-
-    clearTimeout(reactionTimer);
-
-    reactionWaiting = false;
-
-    area.className =
-    "game-area";
-
-    area.textContent =
-    "⚠️ TOO EARLY!";
-
-    return;
-  }
-
-  let time =
-  Date.now() - reactionStart;
-
-  reactionStart = 0;
-  reactionWaiting = false;
-
-  document.getElementById("lastReaction")
-    .textContent =
-    time + " ms";
-
-  if (
-    bestReaction === 0 ||
-    time < bestReaction
-  ) {
-
-    bestReaction = time;
-
-    localStorage.setItem(
-      "bestReaction",
-      bestReaction
-    );
-
-  }
-
-  let earned = 25;
-
-  if (time < 300) {
-    earned = 100;
-  } else if (time < 400) {
-    earned = 80;
-  } else if (time < 500) {
-    earned = 60;
-  }
-
-  addPoints(earned);
-  recordGame();
-
-  area.className =
-  "game-area";
-
-  area.textContent =
-  "🎯 +" + earned + " POINTS!";
-
-}
-
-
-/* ==========================================
-   CLICK FRENZY
-========================================== */
-
-let clickCount = 0;
-let clickTime = 10;
-let clickRunning = false;
-let clickInterval = null;
-
-function startClickGame() {
-
+let clickRunning=false,clicks=0,clickEnd=0,clickInterval=null;
+function startClickFrenzy(){go("clickGame")}
+function clickStartGame(){
+  if(clickRunning)return;
+  clicks=0;clickRunning=true;clickEnd=Date.now()+10000;
+  document.getElementById("clickCount").textContent=0;
+  document.getElementById("clickResult").textContent="";
   clearInterval(clickInterval);
-
-  clickCount = 0;
-  clickTime = 10;
-  clickRunning = true;
-
-  document.getElementById("clickCount")
-    .textContent =
-    0;
-
-  document.getElementById("clickTimer")
-    .textContent =
-    10;
-
-  document.getElementById("clickResult")
-    .textContent =
-    "🔥 GO!";
-
-  clickInterval =
-  setInterval(function() {
-
-    clickTime--;
-
-    document.getElementById("clickTimer")
-      .textContent =
-      clickTime;
-
-    if (clickTime <= 0) {
-
-      clearInterval(clickInterval);
-
-      clickRunning = false;
-
-      let earned =
-      clickCount * 5;
-
-      addPoints(earned);
-
-      recordGame();
-
-      document.getElementById("clickResult")
-        .textContent =
-        "🏁 Finished! +" +
-        earned +
-        " points!";
-
-    }
-
-  }, 1000);
-
+  clickInterval=setInterval(()=>{
+    const left=Math.max(0,Math.ceil((clickEnd-Date.now())/1000));
+    document.getElementById("clickTime").textContent=left;
+    if(left<=0)finishClicks();
+  },100);
+}
+function doClick(){
+  if(!clickRunning)return;
+  clicks++;data.totalClicks++;
+  document.getElementById("clickCount").textContent=clicks;
+}
+function finishClicks(){
+  clearInterval(clickInterval);clickRunning=false;
+  document.getElementById("clickTime").textContent=0;
+  countGame("Click Frenzy");addXP(clicks,clicks*2);
+  document.getElementById("clickResult").textContent=`🔥 ${clicks} clicks! +${clicks*2} points`; if(dailyGames[dailyIndex()]==="Click Frenzy") claimDaily();
+  save();
+}
+let tapRunning=false,taps=0,tapStarted=0;
+function startQuickTap(){go("quickGame")}
+function quickStart(){tapRunning=true;taps=0;tapStarted=performance.now();document.getElementById("tapCount").textContent=0;document.getElementById("quickResult").textContent=""}
+function quickTap(){
+  if(!tapRunning)return;
+  taps++;document.getElementById("tapCount").textContent=taps;
+  if(taps>=20){
+    tapRunning=false;let ms=Math.round(performance.now()-tapStarted);
+    if(!data.quickBest||ms<data.quickBest)data.quickBest=ms;
+    initMissionDay();data.missions.quick=1;
+    countGame("Quick Tap");addXP(Math.max(10,100-Math.floor(ms/50)),80);
+    document.getElementById("quickResult").textContent=`⚡ Completed in ${ms} ms!`; if(dailyGames[dailyIndex()]==="Quick Tap") claimDaily();
+    save();
+  }
+}
+const symbols=["🎮","🚀","🔥","⭐","👾","🏆","🎯","💎"];
+let mem=[];
+function newMemory(){
+  go("memoryGame");
+  mem=[...symbols,...symbols].sort(()=>Math.random()-.5).map((s,i)=>({s,i,open:false,matched:false}));
+  document.getElementById("memoryResult").textContent="";
+  renderMemory();
+}
+function renderMemory(){
+  document.getElementById("memoryBoard").innerHTML=mem.map((x,i)=>
+    `<button class="tile ${x.open||x.matched?"revealed":""} ${x.matched?"matched":""}" onclick="memoryTap(${i})">${x.open||x.matched?x.s:"❓"}</button>`).join("");
+}
+let memBusy=false,memFirst=null;
+function memoryTap(i){
+  if(memBusy||mem[i].matched||mem[i].open)return;
+  mem[i].open=true;renderMemory();
+  if(memFirst===null){memFirst=i;return}
+  let second=i;memBusy=true;
+  if(mem[memFirst].s===mem[second].s){
+    setTimeout(()=>{mem[memFirst].matched=mem[second].matched=true;mem[memFirst].open=mem[second].open=false;memFirst=null;memBusy=false;renderMemory();
+      if(mem.every(x=>x.matched)){countGame("Memory Match");data.memoryWins++;addXP(100,150);document.getElementById("memoryResult").textContent="🧠 Memory Master! +150 points"; if(dailyGames[dailyIndex()]==="Memory Match") claimDaily();save()}
+    },350);
+  }else{
+    setTimeout(()=>{mem[memFirst].open=mem[second].open=false;memFirst=null;memBusy=false;renderMemory()},700);
+  }
+}
+let secret=0,guessActive=false;
+function newGuess(){
+  go("guessGame");secret=1+Math.floor(Math.random()*20);guessActive=true;
+  document.getElementById("guessInput").value="";
+  document.getElementById("guessResult").textContent="I'm thinking of a number...";
+}
+function guessNumber(){
+  if(!guessActive)return newGuess();
+  let n=Number(document.getElementById("guessInput").value);
+  if(!n||n<1||n>20)return toast("Choose a number from 1 to 20.");
+  if(n===secret){
+    guessActive=false;countGame("Number Guess");data.guessWins++;addXP(60,100);
+    document.getElementById("guessResult").textContent="🎉 Correct! +100 points"; if(dailyGames[dailyIndex()]==="Number Guess") claimDaily();
+    save();
+  }else document.getElementById("guessResult").textContent=n<secret?"⬆️ Try higher!":"⬇️ Try lower!";
 }
 
-
-function clickButton() {
-
-  if (!clickRunning) {
-    return;
-  }
-
-  clickCount++;
-
-  document.getElementById("clickCount")
-    .textContent =
-    clickCount;
-
+let colorRunning=false,colorScore=0,colorEnd=0,colorTimer=null,colorTarget="";
+const colorNames=["RED","BLUE","GREEN","YELLOW"];
+const colorValues={RED:"#ef5350",BLUE:"#2196f3",GREEN:"#20c76b",YELLOW:"#ffd54f"};
+function startColorRush(){go("colorGame");}
+function colorStartGame(){
+  if(colorRunning)return;
+  colorRunning=true;colorScore=0;colorEnd=Date.now()+30000;
+  document.getElementById("colorStart").disabled=true;document.getElementById("colorResult").textContent="";
+  colorNext();clearInterval(colorTimer);
+  colorTimer=setInterval(()=>{
+    const left=Math.max(0,Math.ceil((colorEnd-Date.now())/1000));document.getElementById("colorTime").textContent=left;
+    if(left<=0)finishColorRush();
+  },100);
+}
+function colorNext(){
+  if(!colorRunning)return;
+  colorTarget=colorNames[Math.floor(Math.random()*colorNames.length)];
+  const wrong=colorNames.filter(x=>x!==colorTarget).sort(()=>Math.random()-.5).slice(0,3);
+  const choices=[colorTarget,...wrong].sort(()=>Math.random()-.5);
+  const prompt=document.getElementById("colorPrompt");prompt.textContent=colorTarget;
+  prompt.style.color=colorValues[colorNames[Math.floor(Math.random()*colorNames.length)]];
+  document.getElementById("colorChoices").innerHTML=choices.map(c=>`<button class="color-choice" style="background:${colorValues[c]}" onclick="colorPick('${c}')">${c}</button>`).join("");
+}
+function colorPick(c){
+  if(!colorRunning)return;
+  if(c===colorTarget){colorScore++;data.combo=(data.combo||0)+1;}
+  else{data.combo=0;}
+  document.getElementById("comboValue").textContent=data.combo;
+  colorNext();
+}
+function finishColorRush(){
+  if(!colorRunning)return;colorRunning=false;clearInterval(colorTimer);
+  document.getElementById("colorStart").disabled=false;document.getElementById("colorTime").textContent=0;
+  data.bestColor=Math.max(data.bestColor||0,colorScore);
+  countGame("Color Rush");addXP(Math.max(10,colorScore*4),Math.max(20,colorScore*5));
+  if(data.combo>=5)addXP(25,25);
+  document.getElementById("colorResult").textContent=`🎨 Score: ${colorScore} • +${Math.max(20,colorScore*5)} points`;
+  save();
 }
 
-
-/* ==========================================
-   NUMBER GUESS
-========================================== */
-
-let secretNumber =
-Math.floor(Math.random() * 20) + 1;
-
-let guessAttempts = 0;
-
-function makeGuess() {
-
-  let input =
-  document.getElementById("guessInput");
-
-  let guess =
-  Number(input.value);
-
-  if (
-    guess < 1 ||
-    guess > 20
-  ) {
-
-    document.getElementById("guessMessage")
-      .textContent =
-      "Enter a number from 1 to 20.";
-
-    return;
-  }
-
-  guessAttempts++;
-
-  if (guess === secretNumber) {
-
-    let earned =
-    Math.max(
-      25,
-      100 - (guessAttempts * 10)
-    );
-
-    addPoints(earned);
-
-    recordGame();
-
-    document.getElementById("guessMessage")
-      .textContent =
-      "🎉 Correct! +" +
-      earned +
-      " points!";
-
-    secretNumber =
-    Math.floor(Math.random() * 20) + 1;
-
-    guessAttempts = 0;
-
-  } else if (guess < secretNumber) {
-
-    document.getElementById("guessMessage")
-      .textContent =
-      "⬆️ Too low! Try again.";
-
-  } else {
-
-    document.getElementById("guessMessage")
-      .textContent =
-      "⬇️ Too high! Try again.";
-
-  }
-
+let seqRunning=false,seqLevel=1,seqPattern=[],seqUser=[],seqInput=false;
+function startSequence(){go("sequenceGame");}
+function sequenceStartGame(){
+  if(seqRunning)return;seqRunning=true;seqLevel=1;seqPattern=[];seqUser=[];seqInput=false;
+  document.getElementById("sequenceStart").disabled=true;nextSequenceRound();
 }
-
-
-/* ==========================================
-   QUICK TAP
-========================================== */
-
-let tapCount = 0;
-let tapRunning = false;
-
-function startQuickTap() {
-
-  tapCount = 0;
-  tapRunning = true;
-
-  document.getElementById("tapCount")
-    .textContent =
-    "0 / 20";
-
-  document.getElementById("tapMessage")
-    .textContent =
-    "🔥 Start tapping!";
-
+function nextSequenceRound(){
+  seqUser=[];seqInput=false;seqPattern.push(Math.floor(Math.random()*9));
+  document.getElementById("sequenceStatus").textContent=`Level ${seqLevel} — watch! 👀`;
+  const tiles=[...document.querySelectorAll(".sequence-tile")];
+  let i=0;
+  const timer=setInterval(()=>{
+    tiles.forEach(t=>t.classList.remove("flash"));
+    if(i>=seqPattern.length){clearInterval(timer);seqInput=true;document.getElementById("sequenceStatus").textContent=`Level ${seqLevel} — your turn!`;return;}
+    tiles[seqPattern[i]].classList.add("flash");i++;
+  },500);
 }
-
-
-function quickTap() {
-
-  if (!tapRunning) {
-    return;
+function sequenceTap(i){
+  if(!seqInput)return;
+  seqUser.push(i);
+  if(i!==seqPattern[seqUser.length-1]){finishSequence(false);return;}
+  if(seqUser.length===seqPattern.length){
+    seqLevel++;data.bestSequence=Math.max(data.bestSequence||0,seqLevel-1);
+    if(seqLevel>8){finishSequence(true);return;}
+    seqInput=false;document.getElementById("sequenceStatus").textContent="Correct! Next level... 🎉";
+    setTimeout(nextSequenceRound,450);
   }
-
-  tapCount++;
-
-  document.getElementById("tapCount")
-    .textContent =
-    tapCount + " / 20";
-
-  if (tapCount >= 20) {
-
-    tapRunning = false;
-
-    addPoints(75);
-
-    recordGame();
-
-    document.getElementById("tapMessage")
-      .textContent =
-      "🏆 Challenge complete! +75 points!";
-
-  }
-
 }
+function finishSequence(won){
+  seqRunning=false;seqInput=false;document.getElementById("sequenceStart").disabled=false;
+  const reached=Math.max(1,seqLevel-1);data.bestSequence=Math.max(data.bestSequence||0,reached);
+  countGame("Sequence Recall");addXP(reached*15,reached*20);
+  document.getElementById("sequenceStatus").textContent=won?"🏆 Amazing! You completed the arena!":`❌ Game over at level ${reached}. Best: ${data.bestSequence}`;
+  save();
+}
+function buildSequenceBoard(){
+  const b=document.getElementById("sequenceBoard");if(!b)return;
+  b.innerHTML=Array.from({length:9},(_,i)=>`<button class="sequence-tile" onclick="sequenceTap(${i})">${i+1}</button>`).join("");
+}
+buildSequenceBoard();
 
-
-/* ==========================================
-   MEMORY GAME
-========================================== */
-
-const memorySymbols =
-[
-  "🎮",
-  "🎮",
-  "⚽",
-  "⚽",
-  "🚀",
-  "🚀",
-  "👾",
-  "👾"
+const badges=[
+  ["🎮","First Game","Play your first game.",()=>data.games>=1],
+  ["⭐","100 Points","Earn 100 points.",()=>data.points>=100],
+  ["🔥","Gamer","Play 5 games.",()=>data.games>=5],
+  ["⚡","Fast Hands","Get a reaction under 400ms.",()=>data.bestReaction&&data.bestReaction<400],
+  ["🏃","Streak","Reach a 3-day streak.",()=>data.streak>=3],
+  ["🧠","Memory Master","Complete memory game.",()=>data.memoryWins>=1],
+  ["💯","High Scorer","Earn 1000 points.",()=>data.points>=1000],
+  ["🏅","Level 5","Reach level 5.",()=>data.level>=5],
+  ["🎨","Color Rush","Score 15 or more in Color Rush.",()=>data.bestColor>=15],
+  ["🧩","Sequence Pro","Reach sequence level 5.",()=>data.bestSequence>=5],
+  ["🔥","Combo King","Reach a 5-game combo.",()=>data.combo>=5]
 ];
+function renderBadges(){
+  document.getElementById("badgeList").innerHTML=badges.map(b=>`<div class="badge ${b[3]()?"unlocked":"locked"}"><div class="big">${b[0]}</div><h3>${b[1]}</h3><p>${b[2]}</p><strong>${b[3]()?"UNLOCKED":"LOCKED"}</strong></div>`).join("");
+}
+function renderLeaderboard(){
+  let arr=[...data.leaderboard];
+  if(data.name)arr.push({name:data.name,score:data.points});
+  arr.sort((a,b)=>b.score-a.score);
+  document.getElementById("leaderboardList").innerHTML=arr.slice(0,10).map((x,i)=>
+    `<div class="leader-row"><span>${i<3?["🥇","🥈","🥉"][i]:"🏅"} ${escapeHTML(x.name)}</span><strong>${x.score}</strong></div>`).join("");
+}
+function addScore(){
+  if(!data.name)return toast("Save your gamer name first.");
+  data.leaderboard.push({name:data.name,score:data.points});save();toast("Score saved! 🥇");
+}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
 
-let memoryFirst = null;
-let memorySecond = null;
-let memoryLocked = false;
-let memoryMatches = 0;
-
-function startMemoryGame() {
-
-  let symbols =
-  [...memorySymbols];
-
-  symbols.sort(
-    () => Math.random() - 0.5
-  );
-
-  memoryFirst = null;
-  memorySecond = null;
-  memoryLocked = false;
-  memoryMatches = 0;
-
-  let grid =
-  document.getElementById("memoryGrid");
-
-  grid.innerHTML = "";
-
-  document.getElementById("memoryMessage")
-    .textContent =
-    "";
-
-  symbols.forEach(function(symbol, index) {
-
-    let card =
-    document.createElement("div");
-
-    card.className =
-    "memory-card";
-
-    card.dataset.symbol =
-    symbol;
-
-    card.dataset.index =
-    index;
-
-    card.textContent =
-    "❓";
-
-    card.onclick =
-    function() {
-      flipMemoryCard(card);
-    };
-
-    grid.appendChild(card);
-
-  });
-
+function todayKey(){return new Date().toISOString().slice(0,10)}
+function dailyIndex(){
+  const d=new Date(todayKey());
+  return Math.floor(d.getTime()/86400000)%5;
+}
+const dailyGames=["Reaction Challenge","Click Frenzy","Quick Tap","Memory Match","Number Guess"];
+const dailyDescriptions=[
+  "Beat your best reaction time today.",
+  "Finish a 10-second Click Frenzy run.",
+  "Complete 20 Quick Taps.",
+  "Complete a Memory Match board.",
+  "Guess the secret number."
+];
+function renderDaily(){
+  const idx=dailyIndex(), today=todayKey();
+  document.getElementById("dailyDay").textContent=(idx+1);
+  document.getElementById("dailyDescription").textContent=
+    `${dailyGames[idx]} — ${dailyDescriptions[idx]} • +100 bonus points`;
+  const b=document.getElementById("dailyButton");
+  if(data.dailyDate===today && data.dailyDone){b.textContent="COMPLETED ✓";b.disabled=true}
+  else{b.textContent="PLAY TODAY";b.disabled=false}
+}
+function playDaily(){
+  const idx=dailyIndex(), target=dailyGames[idx];
+  go(target==="Reaction Challenge"?"reactionGame":
+     target==="Click Frenzy"?"clickGame":
+     target==="Quick Tap"?"quickGame":
+     target==="Memory Match"?"memoryGame":"guessGame");
+  document.getElementById("dailyResult").textContent="Complete today's challenge to claim the +100 bonus!";
+}
+function claimDaily(){
+  const today=todayKey();
+  if(data.dailyDate===today && data.dailyDone)return;
+  data.dailyDate=today;data.dailyDone=true;
+  addXP(100,100);
+  document.getElementById("dailyResult").textContent="🎁 Daily bonus claimed! +100 points";
+  toast("Daily challenge complete! 🎁");
+  renderDaily();
+  save();
+}
+function beep(type="success"){
+  if(!data.settings?.sound)return;
+  try{
+    const C=window.AudioContext||window.webkitAudioContext;
+    if(!C)return;
+    const ctx=new C(),o=ctx.createOscillator(),g=ctx.createGain();
+    o.type="sine";o.frequency.value=type==="success"?720:280;
+    g.gain.setValueAtTime(.0001,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.08,ctx.currentTime+.01);
+    g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+.12);
+    o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+.13);
+  }catch(e){}
+}
+function vibrate(ms){
+  if(data.settings?.vibration && navigator.vibrate)navigator.vibrate(ms);
+}
+function renderHistory(){
+  const e=document.getElementById("history");
+  if(!data.history.length){e.innerHTML='<p class="muted center">No games recorded yet. Start playing! 🎮</p>';return}
+  e.innerHTML=data.history.slice(0,12).map(h=>
+    `<div class="history-row"><span>🎮 ${escapeHTML(h.game)}<br><small class="muted">${escapeHTML(h.date)}</small></span><strong>⭐ ${h.points}</strong></div>`
+  ).join("");
+}
+function renderSettings(){
+  const s=data.settings||{};
+  document.getElementById("soundToggle").textContent=s.sound?"ON":"OFF";
+  document.getElementById("vibrationToggle").textContent=s.vibration?"ON":"OFF";
+  document.getElementById("themeToggle").textContent=s.theme==="light"?"LIGHT":"DARK";
+}
+function toggleSound(){data.settings.sound=!data.settings.sound;save();toast(data.settings.sound?"Sounds on 🔊":"Sounds off 🔇")}
+function toggleVibration(){data.settings.vibration=!data.settings.vibration;save();toast(data.settings.vibration?"Vibration on 📳":"Vibration off")}
+function toggleTheme(){data.settings.theme=data.settings.theme==="light"?"dark":"light";save();applyTheme()}
+function applyTheme(){document.body.classList.toggle("light",data.settings?.theme==="light")}
+async function shareProfile(){
+  const text=`🎮 ${data.name||"Player"} on My Gaming Hub\n⭐ ${data.points} points\n⚡ Level ${data.level}\n🎮 ${data.games} games\n🏆 Best reaction: ${data.bestReaction?data.bestReaction+" ms":"--"}`;
+  try{
+    if(navigator.share){await navigator.share({title:"My Gaming Hub Profile",text});}
+    else{await navigator.clipboard.writeText(text);toast("Profile copied! 📋")}
+  }catch(e){}
+}
+function exportProgress(){
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="gaming-hub-progress.json";a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast("Progress exported! 💾");
+}
+function importProgress(){
+  const input=document.createElement("input");input.type="file";input.accept=".json,application/json";
+  input.onchange=()=>{
+    const f=input.files?.[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=()=>{
+      try{
+        const imported=JSON.parse(r.result);
+        if(!imported || typeof imported!=="object")throw Error();
+        data=Object.assign(data,imported);
+        data.settings=Object.assign({sound:true,vibration:true,theme:"dark"},data.settings||{});
+        save();toast("Progress imported! 📥");
+      }catch(e){toast("Invalid progress file.")}
+    };r.readAsText(f);
+  };input.click();
 }
 
 
-function flipMemoryCard(card) {
-
-  if (
-    memoryLocked ||
-    card.classList.contains("flipped") ||
-    card.classList.contains("matched")
-  ) {
-    return;
+function phase7Today(){
+  return new Date().toISOString().slice(0,10);
+}
+function missionDefinitions(){
+  return [
+    {id:"play3",title:"🎮 Arcade Starter",desc:"Play 3 games today.",target:3,reward:75},
+    {id:"score250",title:"⭐ Point Hunter",desc:"Earn 250 points today.",target:250,reward:100},
+    {id:"quick",title:"⚡ Speed Runner",desc:"Complete Quick Tap once today.",target:1,reward:100}
+  ];
+}
+function initMissionDay(){
+  const today=phase7Today();
+  if(data.missionDate!==today){
+    data.missionDate=today;
+    data.missions={play3:0,score250:0,quick:0};
+    data.dailyPointsStart=data.points;
+    data.dailyGamesStart=data.games;
+    save();
   }
-
-  card.classList.add("flipped");
-
-  card.textContent =
-  card.dataset.symbol;
-
-  if (!memoryFirst) {
-
-    memoryFirst =
-    card;
-
-    return;
-
-  }
-
-  memorySecond =
-  card;
-
-  memoryLocked =
-  true;
-
-  if (
-    memoryFirst.dataset.symbol ===
-    memorySecond.dataset.symbol
-  ) {
-
-    memoryFirst.classList.add("matched");
-    memorySecond.classList.add("matched");
-
-    memoryMatches++;
-
-    memoryFirst = null;
-    memorySecond = null;
-    memoryLocked = false;
-
-    if (memoryMatches === 4) {
-
-      addPoints(150);
-
-      recordGame();
-
-      document.getElementById("memoryMessage")
-        .textContent =
-        "🧠 Memory Master! +150 points!";
-
-    }
-
-  } else {
-
-    setTimeout(function() {
-
-      memoryFirst.classList.remove("flipped");
-      memorySecond.classList.remove("flipped");
-
-      memoryFirst.textContent =
-      "❓";
-
-      memorySecond.textContent =
-      "❓";
-
-      memoryFirst = null;
-      memorySecond = null;
-
-      memoryLocked = false;
-
-    }, 800);
-
-  }
-
+  data.missions=data.missions||{play3:0,score250:0,quick:0};
+  data.dailyPointsStart=data.dailyPointsStart??data.points;
+  data.dailyGamesStart=data.dailyGamesStart??data.games;
+}
+function missionProgress(id){
+  initMissionDay();
+  if(id==="play3") return Math.max(0,data.games-(data.dailyGamesStart||0));
+  if(id==="score250") return Math.max(0,data.points-(data.dailyPointsStart||0));
+  if(id==="quick") return data.quickBest && data.games>0 ? 1 : 0;
+  return 0;
+}
+function renderMissions(){
+  initMissionDay();
+  const box=document.getElementById("missions"); if(!box)return;
+  box.innerHTML=missionDefinitions().map(m=>{
+    const progress=Math.min(m.target,missionProgress(m.id));
+    const claimed=data.missions[m.id+"_claimed"]===true;
+    const complete=progress>=m.target;
+    return `<div class="mission ${complete?"done":""}">
+      <div class="mission-row">
+        <div><strong>${m.title}</strong><br><span class="muted small">${m.desc}</span></div>
+        <span class="pill">${claimed?"CLAIMED":complete?"READY":"+"+m.reward+" XP"}</span>
+      </div>
+      <div class="progress" style="margin-top:10px"><div style="width:${progress/m.target*100}%"></div></div>
+      <div class="small muted">${progress} / ${m.target}</div>
+      ${complete&&!claimed?`<button class="btn" onclick="claimMission('${m.id}')">CLAIM</button>`:""}
+    </div>`;
+  }).join("");
+}
+function claimMission(id){
+  initMissionDay();
+  const m=missionDefinitions().find(x=>x.id===id);
+  if(!m||data.missions[id+"_claimed"]||missionProgress(id)<m.target)return;
+  data.missions[id+"_claimed"]=true;
+  addXP(m.reward,m.reward);
+  toast("Mission reward claimed! 🏆");
+  save();
+}
+function renderIdeas(){
+  const box=document.getElementById("ideaList");if(!box)return;
+  box.innerHTML=data.ideas.length
+    ? data.ideas.map((x,i)=>`<div class="mission"><div class="mission-row"><span>💡 ${escapeHTML(x)}</span><button class="btn danger" onclick="deleteIdea(${i})">DELETE</button></div></div>`).join("")
+    : '<p class="muted">No ideas saved yet.</p>';
+}
+function saveIdea(){
+  const input=document.getElementById("ideaInput"),v=input.value.trim();
+  if(!v)return toast("Write an idea first.");
+  data.ideas.unshift(v);data.ideas=data.ideas.slice(0,10);input.value="";
+  save();toast("Idea saved! 💡");
+}
+function deleteIdea(i){data.ideas.splice(i,1);save();}
+function spinWheel(){
+  const today=phase7Today();
+  if(data.spinDate===today)return toast("You already spun today. Come back tomorrow! 🔄");
+  data.spinDate=today;
+  const rewards=[25,50,75,100,150];
+  const reward=rewards[Math.floor(Math.random()*rewards.length)];
+  const wheel=document.getElementById("wheel");
+  wheel.classList.remove("spinning");void wheel.offsetWidth;wheel.classList.add("spinning");
+  setTimeout(()=>{
+    addXP(reward,reward);
+    document.getElementById("spinResult").textContent=`🎁 You won ${reward} points!`;
+    document.getElementById("spinButton").disabled=true;
+    save();
+  },1000);
 }
 
-
-/* ==========================================
-   ACHIEVEMENTS
-========================================== */
-
-function updateAchievements() {
-
-  if (gamesPlayed >= 1) {
-
-    document.getElementById("achievement1")
-      .classList.add("unlocked");
-
-  }
-
-  if (points >= 100) {
-
-    document.getElementById("achievement2")
-      .classList.add("unlocked");
-
-  }
-
-  if (gamesPlayed >= 10) {
-
-    document.getElementById("achievement3")
-      .classList.add("unlocked");
-
-  }
-
-  if (
-    bestReaction > 0 &&
-    bestReaction < 400
-  ) {
-
-    document.getElementById("achievement4")
-      .classList.add("unlocked");
-
-  }
-
-  if (localStorage.getItem("memoryMaster") === "true") {
-
-    document.getElementById("achievement5")
-      .classList.add("unlocked");
-
-  }
-
-  if (getLevel() >= 5) {
-
-    document.getElementById("achievement6")
-      .classList.add("unlocked");
-
-  }
-
+function resetData(){
+  if(!confirm("Reset all your gaming progress?"))return;
+  localStorage.removeItem(KEY);location.reload();
 }
-
-
-/* ==========================================
-   RESET
-========================================== */
-
-function resetEverything() {
-
-  let answer =
-  confirm(
-    "Are you sure you want to reset all your progress?"
-  );
-
-  if (!answer) {
-    return;
-  }
-
-  localStorage.clear();
-
-  playerName = "Player";
-  points = 0;
-  xp = 0;
-  gamesPlayed = 0;
-  bestReaction = 0;
-
-  document.getElementById("nicknameInput")
-    .value = "";
-
-  document.getElementById("bestReaction")
-    .textContent = "--";
-
-  document.getElementById("lastReaction")
-    .textContent = "--";
-
-  document.querySelectorAll(".badge")
-    .forEach(function(badge) {
-
-      badge.classList.remove("unlocked");
-
-    });
-
-  updateDashboard();
-
-  alert("Progress reset! 🎮");
-
-}
-
-
-/* ==========================================
-   INITIALIZE
-========================================== */
-
-updateDashboard();
-
-startMemoryGame();
-
+render();
 </script>
-
 </body>
 </html>
