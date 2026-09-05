@@ -1,505 +1,554 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>My Gaming Hub</title>
+  <title>My Gaming Hub</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #101010;
-            color: white;
-        }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #101010;
+      color: white;
+      text-align: center;
+    }
 
-        header {
-            text-align: center;
-            padding: 35px 15px;
-            background: #222;
-        }
+    header {
+      padding: 45px 20px;
+      background: #222;
+      border-bottom: 2px solid #333;
+    }
 
-        header h1 {
-            font-size: 34px;
-            margin: 0 0 10px;
-        }
+    header h1 {
+      font-size: 42px;
+      margin: 0 0 15px;
+    }
 
-        header p {
-            font-size: 18px;
-            margin: 0;
-        }
+    header p {
+      font-size: 20px;
+      color: #ddd;
+    }
 
-        .container {
-            width: 92%;
-            max-width: 600px;
-            margin: 25px auto;
-        }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 25px 15px;
+    }
 
-        .card {
-            background: #222;
-            padding: 25px;
-            border-radius: 18px;
-            margin-bottom: 25px;
-            text-align: center;
-        }
+    .card {
+      background: #222;
+      border-radius: 25px;
+      padding: 30px 20px;
+      margin: 25px 0;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    }
 
-        h2 {
-            margin-top: 0;
-        }
+    h2 {
+      font-size: 32px;
+      margin-top: 0;
+    }
 
-        input {
-            width: 90%;
-            max-width: 350px;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            margin: 10px;
-            font-size: 16px;
-        }
+    .description {
+      font-size: 18px;
+      color: #ddd;
+      line-height: 1.5;
+    }
 
-        button {
-            padding: 14px 24px;
-            border: none;
-            border-radius: 10px;
-            background: #0099dd;
-            color: white;
-            font-size: 17px;
-            font-weight: bold;
-            cursor: pointer;
-            margin: 6px;
-        }
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 16px 28px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      background: #079ddd;
+      color: white;
+      margin: 10px;
+    }
 
-        button:active {
-            transform: scale(0.96);
-        }
+    button:hover {
+      transform: scale(1.03);
+    }
 
-        .reset {
-            background: #555;
-        }
+    .game-area {
+      width: 100%;
+      height: 280px;
+      border-radius: 20px;
+      background: #079ddd;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+      font-size: 28px;
+      font-weight: bold;
+      user-select: none;
+      cursor: pointer;
+    }
 
-        #gameArea {
-            height: 230px;
-            margin: 20px auto;
-            border-radius: 18px;
-            background: #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            font-size: 26px;
-            font-weight: bold;
-            cursor: pointer;
-            user-select: none;
-        }
+    .waiting {
+      background: #8b1e1e;
+    }
 
-        #result {
-            font-size: 20px;
-            margin: 15px 0;
-        }
+    .ready {
+      background: #159447;
+    }
 
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
+    .score-box {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
 
-        .stat {
-            background: #333;
-            padding: 15px;
-            border-radius: 12px;
-            margin: 5px;
-            min-width: 120px;
-        }
+    .score {
+      background: #333;
+      padding: 20px;
+      border-radius: 15px;
+      min-width: 150px;
+    }
 
-        .stat strong {
-            display: block;
-            font-size: 24px;
-            margin-top: 5px;
-        }
+    .score strong {
+      display: block;
+      font-size: 28px;
+      margin-top: 8px;
+    }
 
-        ol {
-            text-align: left;
-            max-width: 350px;
-            margin: auto;
-            padding-left: 45px;
-        }
+    .leaderboard {
+      text-align: left;
+      max-width: 500px;
+      margin: auto;
+    }
 
-        li {
-            padding: 10px;
-            font-size: 18px;
-        }
+    .player {
+      background: #333;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 12px;
+      font-size: 18px;
+    }
 
-        .empty {
-            color: #aaa;
-        }
+    .points {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 15px;
+    }
 
-        footer {
-            text-align: center;
-            padding: 30px;
-            color: #888;
-        }
-    </style>
+    footer {
+      padding: 30px;
+      color: #aaa;
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 32px;
+      }
+
+      h2 {
+        font-size: 27px;
+      }
+
+      .game-area {
+        height: 230px;
+        font-size: 23px;
+      }
+
+      button {
+        width: 85%;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
 <header>
-    <h1>🎮 MY GAMING HUB</h1>
-    <p>Test your speed. Beat your best score. 🏆</p>
+  <h1>🎮 MY GAMING HUB</h1>
+  <p>Welcome to my gaming website!</p>
+  <div class="points">
+    ⭐ Total Points: <span id="totalPoints">0</span>
+  </div>
 </header>
 
 <div class="container">
 
-    <!-- PLAYER -->
-    <div class="card">
-        <h2>👤 Player</h2>
+  <!-- LEADERBOARD -->
+  <section class="card">
+    <h2>🏆 Gaming Leaderboard</h2>
 
-        <input
-            type="text"
-            id="playerName"
-            placeholder="Enter your gaming name"
-            maxlength="20"
-        >
+    <div class="leaderboard">
+      <div class="player">🥇 Player One — 1500 points</div>
+      <div class="player">🥈 Player Two — 1200 points</div>
+      <div class="player">🥉 Player Three — 900 points</div>
+      <div class="player">🎮 You — <span id="leaderboardPoints">0</span> points</div>
+    </div>
+  </section>
 
-        <p id="welcome"></p>
+
+  <!-- REACTION GAME -->
+  <section class="card">
+
+    <h2>⚡ Reaction Challenge</h2>
+
+    <p class="description">
+      Tap START, wait for the green signal,
+      then tap the game area as quickly as possible!
+    </p>
+
+    <button onclick="startReactionGame()">
+      START GAME
+    </button>
+
+    <div id="reactionArea" class="game-area">
+      TAP START
     </div>
 
+    <div class="score-box">
 
-    <!-- GAME -->
-    <div class="card">
+      <div class="score">
+        ⚡ Best
+        <strong id="bestReaction">--</strong>
+      </div>
 
-        <h2>⚡ Reaction Challenge</h2>
-
-        <p>
-            Tap START, wait for the signal,
-            then tap the game area as quickly as possible!
-        </p>
-
-        <button onclick="startGame()">START GAME</button>
-
-        <div id="gameArea">
-            Press START to begin 🎮
-        </div>
-
-        <div id="result">
-            Your reaction time will appear here.
-        </div>
-
-        <div class="stats">
-
-            <div class="stat">
-                🏆 Best
-                <strong id="bestScore">--</strong>
-            </div>
-
-            <div class="stat">
-                🎯 Rounds
-                <strong id="rounds">0</strong>
-            </div>
-
-        </div>
+      <div class="score">
+        🎯 Last
+        <strong id="lastReaction">--</strong>
+      </div>
 
     </div>
 
+  </section>
 
-    <!-- LEADERBOARD -->
-    <div class="card">
 
-        <h2>🏆 Top 5 Scores</h2>
+  <!-- CLICK GAME -->
+  <section class="card">
 
-        <ol id="leaderboard">
-            <li class="empty">No scores yet. Be the first!</li>
-        </ol>
+    <h2>🖱️ Click Challenge</h2>
 
-        <button class="reset" onclick="resetScores()">
-            🗑️ Reset Scores
-        </button>
+    <p class="description">
+      Click the button as many times as you can
+      before the timer reaches zero!
+    </p>
+
+    <button onclick="startClickGame()">
+      START CLICK GAME
+    </button>
+
+    <div class="score-box">
+
+      <div class="score">
+        ⏱️ Time
+        <strong id="timer">10</strong>
+      </div>
+
+      <div class="score">
+        🖱️ Clicks
+        <strong id="clicks">0</strong>
+      </div>
 
     </div>
+
+    <button onclick="addClick()">
+      🖱️ CLICK!
+    </button>
+
+    <p id="clickMessage"></p>
+
+  </section>
+
+
+  <!-- RESET -->
+  <section class="card">
+
+    <h2>🔄 Player Controls</h2>
+
+    <p class="description">
+      Your scores are saved in your browser.
+    </p>
+
+    <button onclick="resetScores()">
+      RESET MY SCORES
+    </button>
+
+  </section>
 
 </div>
 
 <footer>
-    🎮 My Gaming Hub © 2026
+  🎮 My Gaming Hub © 2026
 </footer>
 
 
 <script>
 
-    let startTime = null;
-    let timer = null;
-    let waiting = false;
+  /* =========================
+     POINTS SYSTEM
+  ========================= */
 
-    const nameInput = document.getElementById("playerName");
-    const gameArea = document.getElementById("gameArea");
-    const result = document.getElementById("result");
-    const bestScore = document.getElementById("bestScore");
-    const roundsDisplay = document.getElementById("rounds");
-    const leaderboard = document.getElementById("leaderboard");
-    const welcome = document.getElementById("welcome");
+  let totalPoints =
+    Number(localStorage.getItem("gamingPoints")) || 0;
 
+  document.getElementById("totalPoints").textContent =
+    totalPoints;
 
-    // Load saved player name
-    const savedName = localStorage.getItem("gamingPlayerName");
-
-    if (savedName) {
-        nameInput.value = savedName;
-        welcome.innerHTML = "Welcome back, <strong>" + savedName + "</strong>! 👋";
-    }
+  document.getElementById("leaderboardPoints").textContent =
+    totalPoints;
 
 
-    // Save player name when typing
-    nameInput.addEventListener("input", function() {
+  function addPoints(amount) {
 
-        const name = nameInput.value.trim();
+    totalPoints += amount;
 
-        localStorage.setItem("gamingPlayerName", name);
+    localStorage.setItem(
+      "gamingPoints",
+      totalPoints
+    );
 
-        if (name) {
-            welcome.innerHTML =
-                "Ready to play, <strong>" + name + "</strong>! 🎮";
-        } else {
-            welcome.innerHTML = "";
-        }
-    });
+    document.getElementById("totalPoints").textContent =
+      totalPoints;
 
-
-    // Get saved scores
-    function getScores() {
-
-        return JSON.parse(
-            localStorage.getItem("gamingScores") || "[]"
-        );
-
-    }
+    document.getElementById("leaderboardPoints").textContent =
+      totalPoints;
+  }
 
 
-    // Save scores
-    function saveScores(scores) {
+  /* =========================
+     REACTION GAME
+  ========================= */
+
+  let reactionStart = 0;
+  let reactionTimeout;
+  let reactionWaiting = false;
+
+  let bestReaction =
+    Number(localStorage.getItem("bestReaction")) || 0;
+
+  if (bestReaction > 0) {
+    document.getElementById("bestReaction").textContent =
+      bestReaction + " ms";
+  }
+
+
+  function startReactionGame() {
+
+    const area =
+      document.getElementById("reactionArea");
+
+    clearTimeout(reactionTimeout);
+
+    reactionWaiting = true;
+
+    area.className = "game-area waiting";
+
+    area.textContent =
+      "WAIT FOR GREEN...";
+
+    const delay =
+      Math.floor(Math.random() * 3000) + 1500;
+
+    reactionTimeout = setTimeout(function() {
+
+      reactionStart = Date.now();
+
+      area.className = "game-area ready";
+
+      area.textContent =
+        "🟢 TAP NOW!";
+
+    }, delay);
+  }
+
+
+  document
+    .getElementById("reactionArea")
+    .addEventListener("click", function() {
+
+      const area = this;
+
+      if (!reactionWaiting) {
+        return;
+      }
+
+      if (reactionStart === 0) {
+
+        clearTimeout(reactionTimeout);
+
+        area.className = "game-area";
+
+        area.textContent =
+          "⚠️ TOO EARLY!";
+
+        reactionWaiting = false;
+
+        return;
+      }
+
+      const reactionTime =
+        Date.now() - reactionStart;
+
+      reactionStart = 0;
+      reactionWaiting = false;
+
+      area.className = "game-area";
+
+      area.textContent =
+        "🎯 NICE!";
+
+      document.getElementById("lastReaction")
+        .textContent =
+        reactionTime + " ms";
+
+
+      if (
+        bestReaction === 0 ||
+        reactionTime < bestReaction
+      ) {
+
+        bestReaction = reactionTime;
 
         localStorage.setItem(
-            "gamingScores",
-            JSON.stringify(scores)
+          "bestReaction",
+          bestReaction
         );
 
-    }
+        document.getElementById("bestReaction")
+          .textContent =
+          bestReaction + " ms";
+      }
 
 
-    // Start game
-    function startGame() {
+      /* Give points based on performance */
 
-        const name = nameInput.value.trim();
+      let points = 0;
 
-        if (!name) {
+      if (reactionTime < 300) {
+        points = 100;
+      } else if (reactionTime < 500) {
+        points = 75;
+      } else if (reactionTime < 700) {
+        points = 50;
+      } else {
+        points = 25;
+      }
 
-            alert("Please enter your gaming name first! 👤");
+      addPoints(points);
 
-            nameInput.focus();
-
-            return;
-        }
-
-
-        clearTimeout(timer);
-
-        waiting = true;
-        startTime = null;
-
-        gameArea.innerHTML = "⏳ WAIT...";
-        gameArea.style.background = "#333";
-
-        result.innerHTML = "Don't tap yet!";
-
-
-        // Random delay between 2 and 5 seconds
-        const delay =
-            Math.floor(Math.random() * 3000) + 2000;
-
-
-        timer = setTimeout(function() {
-
-            startTime = Date.now();
-
-            waiting = false;
-
-            gameArea.innerHTML = "🔥 TAP NOW!";
-            gameArea.style.background = "#0099dd";
-
-        }, delay);
-
-    }
-
-
-    // Game area click
-    gameArea.addEventListener("click", function() {
-
-        // Player tapped too early
-        if (waiting) {
-
-            clearTimeout(timer);
-
-            waiting = false;
-            startTime = null;
-
-            gameArea.innerHTML = "❌ TOO EARLY!";
-
-            result.innerHTML =
-                "You tapped too soon. Try again! 😁";
-
-            gameArea.style.background = "#333";
-
-            return;
-        }
-
-
-        // No active game
-        if (!startTime) {
-
-            return;
-
-        }
-
-
-        // Calculate reaction time
-        const reactionTime =
-            Date.now() - startTime;
-
-
-        const name =
-            nameInput.value.trim();
-
-
-        gameArea.innerHTML = "🎯 NICE!";
-
-        result.innerHTML =
-            "⚡ <strong>" +
-            reactionTime +
-            " ms</strong>";
-
-
-        gameArea.style.background = "#0099dd";
-
-
-        // Save score
-        const scores = getScores();
-
-        scores.push({
-
-            name: name,
-
-            score: reactionTime,
-
-            date: new Date().toLocaleDateString()
-
-        });
-
-
-        // Sort fastest first
-        scores.sort(function(a, b) {
-
-            return a.score - b.score;
-
-        });
-
-
-        // Keep top 5
-        const topScores =
-            scores.slice(0, 5);
-
-
-        saveScores(topScores);
-
-
-        startTime = null;
-
-
-        updateLeaderboard();
-
+      area.textContent =
+        "🎯 +" + points + " POINTS!";
     });
 
 
-    // Update leaderboard
-    function updateLeaderboard() {
+  /* =========================
+     CLICK CHALLENGE
+  ========================= */
 
-        const scores = getScores();
-
-        leaderboard.innerHTML = "";
-
-
-        if (scores.length === 0) {
-
-            leaderboard.innerHTML =
-                '<li class="empty">No scores yet. Be the first!</li>';
-
-            bestScore.innerHTML = "--";
-
-            roundsDisplay.innerHTML = "0";
-
-            return;
-
-        }
+  let clickCount = 0;
+  let clickTime = 10;
+  let clickRunning = false;
+  let clickInterval;
 
 
-        scores.forEach(function(item, index) {
+  function startClickGame() {
 
-            const li =
-                document.createElement("li");
+    clearInterval(clickInterval);
 
-            li.innerHTML =
-                "<strong>" +
-                item.name +
-                "</strong> — " +
-                item.score +
-                " ms";
+    clickCount = 0;
+    clickTime = 10;
+    clickRunning = true;
 
-            leaderboard.appendChild(li);
+    document.getElementById("clicks")
+      .textContent = clickCount;
 
-        });
+    document.getElementById("timer")
+      .textContent = clickTime;
+
+    document.getElementById("clickMessage")
+      .textContent =
+      "🔥 GO! CLICK AS FAST AS YOU CAN!";
+
+    clickInterval = setInterval(function() {
+
+      clickTime--;
+
+      document.getElementById("timer")
+        .textContent = clickTime;
+
+      if (clickTime <= 0) {
+
+        clearInterval(clickInterval);
+
+        clickRunning = false;
+
+        const earnedPoints =
+          clickCount * 5;
+
+        addPoints(earnedPoints);
+
+        document.getElementById("clickMessage")
+          .textContent =
+          "🏁 Finished! +" +
+          earnedPoints +
+          " points!";
+      }
+
+    }, 1000);
+  }
 
 
-        // Best score
-        bestScore.innerHTML =
-            scores[0].score + " ms";
+  function addClick() {
 
-
-        // Number of saved scores
-        roundsDisplay.innerHTML =
-            scores.length;
-
+    if (!clickRunning) {
+      return;
     }
 
+    clickCount++;
 
-    // Reset leaderboard
-    function resetScores() {
-
-        const confirmReset =
-            confirm(
-                "Are you sure you want to delete all scores?"
-            );
+    document.getElementById("clicks")
+      .textContent = clickCount;
+  }
 
 
-        if (confirmReset) {
+  /* =========================
+     RESET SCORES
+  ========================= */
 
-            localStorage.removeItem("gamingScores");
+  function resetScores() {
 
-            updateLeaderboard();
+    const confirmReset =
+      confirm(
+        "Reset all your saved scores?"
+      );
 
-            result.innerHTML =
-                "Scores have been reset.";
-
-        }
-
+    if (!confirmReset) {
+      return;
     }
 
+    localStorage.removeItem("gamingPoints");
+    localStorage.removeItem("bestReaction");
 
-    // Load leaderboard when page opens
-    updateLeaderboard();
+    totalPoints = 0;
+    bestReaction = 0;
+
+    document.getElementById("totalPoints")
+      .textContent = 0;
+
+    document.getElementById("leaderboardPoints")
+      .textContent = 0;
+
+    document.getElementById("bestReaction")
+      .textContent = "--";
+
+    document.getElementById("lastReaction")
+      .textContent = "--";
+
+    alert("Scores reset!");
+  }
 
 </script>
 
