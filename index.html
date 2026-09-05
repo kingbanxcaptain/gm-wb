@@ -1174,7 +1174,7 @@ function renderProfiles(){
 function supabaseSetStatus(msg){const el=document.getElementById("supabaseStatus");if(el)el.textContent=msg;}
 function supabaseRender(rows){
   const box=document.getElementById("supabaseBoard");if(!box)return;
-  const clean=(Array.isArray(rows)?rows:[]).filter(x=>x&&Number.isFinite(Number(x.score))).sort((a,b)=>Number(b.score)-Number(a.score)).slice(0,20);
+  const clean=(Array.isArray(rows)?rows:[]).map(x=>({player:x?.player??x?.Player??"Player",score:x?.score??x?.Score,created_at:x?.created_at??x?.Created_at})).filter(x=>x&&Number.isFinite(Number(x.score))).sort((a,b)=>Number(b.score)-Number(a.score)).slice(0,20);
   if(!clean.length){box.innerHTML='<p class="muted">No public scores found yet.</p>';return;}
   box.innerHTML=clean.map((x,i)=>`<div class="phase10-rank"><span><strong>#${i+1}</strong> ${escapeHTML(String(x.player||"Player"))}<br><span class="muted small">${x.created_at?escapeHTML(new Date(x.created_at).toLocaleString()):""}</span></span><strong>⭐ ${Number(x.score)||0}</strong></div>`).join("");
 }
@@ -1192,7 +1192,7 @@ async function supabaseLoadLeaderboard(){
   if(!url||!key)return toast("Enter and save your Supabase settings first.");
   try{
     supabaseSetStatus("Loading online scores… ⏳");
-    const endpoint=url+"/rest/v1/leaderboard?select=player,score,created_at&order=score.desc&limit=20";
+    const endpoint=url+"/rest/v1/leaderboard?select=*&order=score.desc&limit=20";
     const res=await fetch(endpoint,{headers:{apikey:key,Authorization:"Bearer "+key,Accept:"application/json"}});
     if(!res.ok)throw Error("HTTP "+res.status);
     const rows=await res.json();
