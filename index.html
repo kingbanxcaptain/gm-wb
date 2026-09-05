@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>My Gaming Hub — Phase 7</title>
+<title>My Gaming Hub — Phase 8</title>
 <style>
 :root{
   --bg:#0f0f0f;--card:#202020;--card2:#2d2d2d;--text:#f5f5f5;
@@ -173,6 +173,7 @@ footer{text-align:center;color:#888;padding:35px 15px}
     <button onclick="go('achievements')">🏆 Achievements</button>
     <button onclick="go('leaderboard')">🥇 Leaderboard</button>
     <button onclick="go('phase6')">🚀 Phase 6</button>
+    <button onclick="go('phase8')">🌐 Phase 8</button>
   </div>
 </nav>
 
@@ -329,6 +330,46 @@ footer{text-align:center;color:#888;padding:35px 15px}
 </section>
 
 
+<section id="phase8">
+  <div class="card arcade-hero">
+    <span class="arcade-badge">PHASE 8 • ONLINE READY</span>
+    <h2 style="margin-top:10px">🌐 Online Arena</h2>
+    <p class="muted">Your gaming hub is now prepared for a real shared leaderboard without putting secret keys in your public GitHub code.</p>
+  </div>
+
+  <div class="card">
+    <h2>🥇 Online Leaderboard</h2>
+    <p class="muted">Add your own backend/API endpoint when you have one. Until then, the site safely keeps using the local leaderboard.</p>
+    <label class="small muted">Public leaderboard API endpoint</label>
+    <input id="apiEndpoint" placeholder="https://example.com/api/leaderboard" maxlength="300">
+    <div class="grid" style="margin-top:12px">
+      <button class="btn" onclick="saveApiSettings()">SAVE ENDPOINT</button>
+      <button class="btn secondary" onclick="loadOnlineLeaderboard()">REFRESH ONLINE</button>
+      <button class="btn" onclick="submitOnlineScore()">SUBMIT MY SCORE</button>
+    </div>
+    <p id="onlineStatus" class="result center">Offline/local mode is active.</p>
+    <div id="onlineLeaderboard" class="history"></div>
+  </div>
+
+  <div class="card">
+    <h2>👤 Player Card</h2>
+    <div class="grid">
+      <div class="stat">🎮 Gamer<div class="value" id="onlineName">Player</div></div>
+      <div class="stat">⭐ Score<div class="value" id="onlineScore">0</div></div>
+      <div class="stat">⚡ Level<div class="value" id="onlineLevel">1</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🛡️ Safe Online Setup</h2>
+    <ul class="muted">
+      <li>Never put passwords, private API keys, or database admin keys in this HTML file.</li>
+      <li>GitHub Pages can host the front end, but a real shared leaderboard needs a backend/database.</li>
+      <li>Your current local leaderboard still works if no online endpoint is configured.</li>
+    </ul>
+  </div>
+</section>
+
 <section id="phase6">
   <div class="card daily-box">
     <div class="phase5-banner">
@@ -432,7 +473,8 @@ let data=JSON.parse(localStorage.getItem(KEY)||"null")||{
     {name:"Player One",score:1500},{name:"Player Two",score:1200},{name:"Player Three",score:900}
   ],
   history:[], dailyDate:"", dailyDone:false, combo:0, bestColor:0, bestSequence:0,
-  settings:{sound:true,vibration:true,theme:"dark"}
+  settings:{sound:true,vibration:true,theme:"dark"},
+  online:{endpoint:""}
 };
 data.history=data.history||[];
 data.missions=data.missions||{};
@@ -904,11 +946,59 @@ function spinWheel(){
   },1000);
 }
 
+function renderPhase8(){
+  const endpoint=document.getElementById("apiEndpoint");
+  if(endpoint) endpoint.value=data.online?.endpoint||"";
+  const n=document.getElementById("onlineName"),sc=document.getElementById("onlineScore"),lv=document.getElementById("onlineLevel");
+  if(n)n.textContent=data.name||"Player";
+  if(sc)sc.textContent=data.points||0;
+  if(lv)lv.textContent=data.level||1;
+  const box=document.getElementById("onlineLeaderboard");
+  if(box){
+    const list=[...(data.leaderboard||[])].sort((a,b)=>(b.score||0)-(a.score||0)).slice(0,10);
+    box.innerHTML=list.map((x,i)=>`<div class="history-row"><span>#${i+1} ${escapeHTML(x.name||"Player")}</span><strong>⭐ ${x.score||0}</strong></div>`).join("");
+  }
+}
+function saveApiSettings(){
+  const input=document.getElementById("apiEndpoint"), value=input.value.trim();
+  if(value && !/^https:\/\//i.test(value)) return toast("Use a secure HTTPS endpoint.");
+  data.online=data.online||{};data.online.endpoint=value;save();
+  setOnlineStatus(value?"Online endpoint saved. Ready to test! 🌐":"Local mode enabled.");
+}
+function setOnlineStatus(text){const el=document.getElementById("onlineStatus");if(el)el.textContent=text;}
+async function loadOnlineLeaderboard(){
+  const endpoint=(data.online?.endpoint||document.getElementById("apiEndpoint")?.value||"").trim();
+  if(!endpoint)return toast("Add an API endpoint first.");
+  try{
+    setOnlineStatus("Connecting… ⏳");
+    const res=await fetch(endpoint,{method:"GET",headers:{Accept:"application/json"}});
+    if(!res.ok)throw Error("HTTP "+res.status);
+    const json=await res.json();
+    const list=Array.isArray(json)?json:(json.leaderboard||json.scores||[]);
+    if(!Array.isArray(list))throw Error("Invalid leaderboard format");
+    const box=document.getElementById("onlineLeaderboard");
+    box.innerHTML=list.slice(0,10).map((x,i)=>`<div class="history-row"><span>#${i+1} ${escapeHTML(String(x.name||"Player"))}</span><strong>⭐ ${Number(x.score)||0}</strong></div>`).join("")||'<p class="muted">No online scores yet.</p>';
+    setOnlineStatus("Online leaderboard loaded! ✅");
+  }catch(e){setOnlineStatus("Could not connect. Check the endpoint and CORS settings.");toast("Online leaderboard unavailable.");}
+}
+async function submitOnlineScore(){
+  const endpoint=(data.online?.endpoint||document.getElementById("apiEndpoint")?.value||"").trim();
+  if(!endpoint)return toast("Add an API endpoint first.");
+  if(!data.name)return toast("Save your gamer name first.");
+  try{
+    setOnlineStatus("Submitting score… ⏳");
+    const res=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({name:data.name,score:data.points||0,level:data.level||1,games:data.games||0})});
+    if(!res.ok)throw Error("HTTP "+res.status);
+    setOnlineStatus("Score submitted! 🏆");
+    await loadOnlineLeaderboard();
+  }catch(e){setOnlineStatus("Score was not submitted. Check the backend and CORS settings.");toast("Online submission unavailable.");}
+}
 function resetData(){
   if(!confirm("Reset all your gaming progress?"))return;
   localStorage.removeItem(KEY);location.reload();
 }
 render();
+renderPhase8();
 </script>
 </body>
 </html>
