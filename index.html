@@ -1,554 +1,1416 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>My Gaming Hub</title>
+<title>My Gaming Hub</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #101010;
-      color: white;
-      text-align: center;
-    }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #101010;
+  color: white;
+}
 
-    header {
-      padding: 45px 20px;
-      background: #222;
-      border-bottom: 2px solid #333;
-    }
+header {
+  background: linear-gradient(135deg, #171717, #292929);
+  text-align: center;
+  padding: 35px 15px;
+  border-bottom: 2px solid #333;
+}
 
-    header h1 {
-      font-size: 42px;
-      margin: 0 0 15px;
-    }
+header h1 {
+  font-size: 40px;
+  margin: 0 0 10px;
+}
 
-    header p {
-      font-size: 20px;
-      color: #ddd;
-    }
+header p {
+  color: #ddd;
+  font-size: 18px;
+}
 
-    .container {
-      max-width: 900px;
-      margin: auto;
-      padding: 25px 15px;
-    }
+.container {
+  max-width: 950px;
+  margin: auto;
+  padding: 15px;
+}
 
-    .card {
-      background: #222;
-      border-radius: 25px;
-      padding: 30px 20px;
-      margin: 25px 0;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-    }
+.card {
+  background: #202020;
+  border-radius: 22px;
+  padding: 25px 18px;
+  margin: 20px 0;
+  box-shadow: 0 5px 20px rgba(0,0,0,.3);
+}
 
-    h2 {
-      font-size: 32px;
-      margin-top: 0;
-    }
+h2 {
+  text-align: center;
+  font-size: 30px;
+  margin-top: 0;
+}
 
-    .description {
-      font-size: 18px;
-      color: #ddd;
-      line-height: 1.5;
-    }
+h3 {
+  font-size: 22px;
+}
 
-    button {
-      border: none;
-      border-radius: 12px;
-      padding: 16px 28px;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-      background: #079ddd;
-      color: white;
-      margin: 10px;
-    }
+.description {
+  text-align: center;
+  color: #ddd;
+  line-height: 1.5;
+  font-size: 17px;
+}
 
-    button:hover {
-      transform: scale(1.03);
-    }
+button {
+  display: inline-block;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 22px;
+  margin: 8px;
+  background: #079ddd;
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
 
-    .game-area {
-      width: 100%;
-      height: 280px;
-      border-radius: 20px;
-      background: #079ddd;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-top: 20px;
-      font-size: 28px;
-      font-weight: bold;
-      user-select: none;
-      cursor: pointer;
-    }
+button:active {
+  transform: scale(.96);
+}
 
-    .waiting {
-      background: #8b1e1e;
-    }
+input {
+  width: 90%;
+  max-width: 400px;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  font-size: 17px;
+  margin: 8px;
+}
 
-    .ready {
-      background: #159447;
-    }
+.center {
+  text-align: center;
+}
 
-    .score-box {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
 
-    .score {
-      background: #333;
-      padding: 20px;
-      border-radius: 15px;
-      min-width: 150px;
-    }
+.stat {
+  background: #303030;
+  padding: 18px 8px;
+  border-radius: 15px;
+  text-align: center;
+}
 
-    .score strong {
-      display: block;
-      font-size: 28px;
-      margin-top: 8px;
-    }
+.stat span {
+  display: block;
+  font-size: 26px;
+  font-weight: bold;
+  margin-top: 7px;
+}
 
-    .leaderboard {
-      text-align: left;
-      max-width: 500px;
-      margin: auto;
-    }
+.progress {
+  width: 100%;
+  height: 18px;
+  background: #3a3a3a;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 15px 0;
+}
 
-    .player {
-      background: #333;
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 12px;
-      font-size: 18px;
-    }
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: #079ddd;
+  transition: width .4s;
+}
 
-    .points {
-      font-size: 24px;
-      font-weight: bold;
-      margin: 15px;
-    }
+.game-area {
+  height: 250px;
+  width: 100%;
+  border-radius: 18px;
+  background: #078fca;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 27px;
+  font-weight: bold;
+  margin: 18px 0;
+  user-select: none;
+  cursor: pointer;
+}
 
-    footer {
-      padding: 30px;
-      color: #aaa;
-    }
+.waiting {
+  background: #8c2525;
+}
 
-    @media (max-width: 600px) {
-      header h1 {
-        font-size: 32px;
-      }
+.ready {
+  background: #159447;
+}
 
-      h2 {
-        font-size: 27px;
-      }
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  max-width: 500px;
+  margin: 20px auto;
+}
 
-      .game-area {
-        height: 230px;
-        font-size: 23px;
-      }
+.memory-card {
+  height: 75px;
+  background: #333;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  cursor: pointer;
+}
 
-      button {
-        width: 85%;
-      }
-    }
-  </style>
+.memory-card.flipped {
+  background: #079ddd;
+}
+
+.memory-card.matched {
+  background: #159447;
+}
+
+.big-number {
+  font-size: 55px;
+  font-weight: bold;
+  margin: 20px;
+}
+
+.achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.badge {
+  background: #303030;
+  padding: 18px 8px;
+  border-radius: 15px;
+  text-align: center;
+  opacity: .45;
+}
+
+.badge.unlocked {
+  opacity: 1;
+  border: 2px solid #079ddd;
+}
+
+.badge-icon {
+  font-size: 35px;
+}
+
+.leaderboard {
+  max-width: 600px;
+  margin: auto;
+}
+
+.player {
+  background: #303030;
+  padding: 15px;
+  margin: 8px 0;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.hidden {
+  display: none;
+}
+
+footer {
+  text-align: center;
+  padding: 35px;
+  color: #888;
+}
+
+@media (max-width: 650px) {
+
+  header h1 {
+    font-size: 31px;
+  }
+
+  .dashboard {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .achievement-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .game-area {
+    height: 220px;
+    font-size: 22px;
+  }
+
+  button {
+    width: 85%;
+  }
+
+  .memory-card {
+    height: 65px;
+  }
+}
+</style>
 </head>
 
 <body>
 
 <header>
-  <h1>🎮 MY GAMING HUB</h1>
-  <p>Welcome to my gaming website!</p>
-  <div class="points">
-    ⭐ Total Points: <span id="totalPoints">0</span>
-  </div>
+
+<h1>🎮 MY GAMING HUB</h1>
+
+<p>Play. Score. Level Up.</p>
+
+<div id="welcomeText">
+  Welcome, Player!
+</div>
+
 </header>
+
 
 <div class="container">
 
-  <!-- LEADERBOARD -->
-  <section class="card">
-    <h2>🏆 Gaming Leaderboard</h2>
 
-    <div class="leaderboard">
-      <div class="player">🥇 Player One — 1500 points</div>
-      <div class="player">🥈 Player Two — 1200 points</div>
-      <div class="player">🥉 Player Three — 900 points</div>
-      <div class="player">🎮 You — <span id="leaderboardPoints">0</span> points</div>
-    </div>
-  </section>
+<!-- PLAYER PROFILE -->
 
+<section class="card">
 
-  <!-- REACTION GAME -->
-  <section class="card">
+<h2>👤 Player Profile</h2>
 
-    <h2>⚡ Reaction Challenge</h2>
+<div class="center">
 
-    <p class="description">
-      Tap START, wait for the green signal,
-      then tap the game area as quickly as possible!
-    </p>
+<input
+  id="nicknameInput"
+  type="text"
+  maxlength="15"
+  placeholder="Enter your nickname"
+>
 
-    <button onclick="startReactionGame()">
-      START GAME
-    </button>
+<br>
 
-    <div id="reactionArea" class="game-area">
-      TAP START
-    </div>
-
-    <div class="score-box">
-
-      <div class="score">
-        ⚡ Best
-        <strong id="bestReaction">--</strong>
-      </div>
-
-      <div class="score">
-        🎯 Last
-        <strong id="lastReaction">--</strong>
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- CLICK GAME -->
-  <section class="card">
-
-    <h2>🖱️ Click Challenge</h2>
-
-    <p class="description">
-      Click the button as many times as you can
-      before the timer reaches zero!
-    </p>
-
-    <button onclick="startClickGame()">
-      START CLICK GAME
-    </button>
-
-    <div class="score-box">
-
-      <div class="score">
-        ⏱️ Time
-        <strong id="timer">10</strong>
-      </div>
-
-      <div class="score">
-        🖱️ Clicks
-        <strong id="clicks">0</strong>
-      </div>
-
-    </div>
-
-    <button onclick="addClick()">
-      🖱️ CLICK!
-    </button>
-
-    <p id="clickMessage"></p>
-
-  </section>
-
-
-  <!-- RESET -->
-  <section class="card">
-
-    <h2>🔄 Player Controls</h2>
-
-    <p class="description">
-      Your scores are saved in your browser.
-    </p>
-
-    <button onclick="resetScores()">
-      RESET MY SCORES
-    </button>
-
-  </section>
+<button onclick="saveNickname()">
+  SAVE NAME
+</button>
 
 </div>
 
+</section>
+
+
+<!-- DASHBOARD -->
+
+<section class="card">
+
+<h2>📊 Your Dashboard</h2>
+
+<div class="dashboard">
+
+<div class="stat">
+  ⭐ Points
+  <span id="points">0</span>
+</div>
+
+<div class="stat">
+  ⚡ XP
+  <span id="xp">0</span>
+</div>
+
+<div class="stat">
+  🏅 Level
+  <span id="level">1</span>
+</div>
+
+<div class="stat">
+  🎮 Games
+  <span id="gamesPlayed">0</span>
+</div>
+
+</div>
+
+<h3>Level Progress</h3>
+
+<div class="progress">
+  <div id="xpBar" class="progress-bar"></div>
+</div>
+
+<p class="center">
+  <span id="xpNeeded">100</span> XP to next level
+</p>
+
+</section>
+
+
+<!-- REACTION GAME -->
+
+<section class="card">
+
+<h2>⚡ Reaction Challenge</h2>
+
+<p class="description">
+Tap START, wait for green, then tap the game area as quickly as possible.
+</p>
+
+<div class="center">
+
+<button onclick="startReaction()">
+START GAME
+</button>
+
+</div>
+
+<div
+  id="reactionArea"
+  class="game-area"
+  onclick="reactionClick()"
+>
+TAP START
+</div>
+
+<div class="dashboard">
+
+<div class="stat">
+  🏆 Best
+  <span id="bestReaction">--</span>
+</div>
+
+<div class="stat">
+  🎯 Last
+  <span id="lastReaction">--</span>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- CLICK GAME -->
+
+<section class="card">
+
+<h2>🖱️ Click Frenzy</h2>
+
+<p class="description">
+You have 10 seconds. Get as many clicks as possible!
+</p>
+
+<div class="center">
+
+<button onclick="startClickGame()">
+START
+</button>
+
+</div>
+
+<div class="dashboard">
+
+<div class="stat">
+  ⏱️ Time
+  <span id="clickTimer">10</span>
+</div>
+
+<div class="stat">
+  🖱️ Clicks
+  <span id="clickCount">0</span>
+</div>
+
+</div>
+
+<div class="center">
+
+<button onclick="clickButton()">
+🖱️ CLICK!
+</button>
+
+<p id="clickResult"></p>
+
+</div>
+
+</section>
+
+
+<!-- NUMBER GUESS -->
+
+<section class="card">
+
+<h2>🔢 Number Guess</h2>
+
+<p class="description">
+Guess the secret number between 1 and 20.
+</p>
+
+<div class="center">
+
+<input
+  id="guessInput"
+  type="number"
+  min="1"
+  max="20"
+  placeholder="Your guess"
+>
+
+<br>
+
+<button onclick="makeGuess()">
+GUESS
+</button>
+
+<p id="guessMessage">
+I'm thinking of a number...
+</p>
+
+</div>
+
+</section>
+
+
+<!-- QUICK TAP -->
+
+<section class="card">
+
+<h2>👆 Quick Tap</h2>
+
+<p class="description">
+Tap the button 20 times as quickly as you can!
+</p>
+
+<div class="center">
+
+<button onclick="startQuickTap()">
+START
+</button>
+
+<div class="big-number" id="tapCount">
+0 / 20
+</div>
+
+<button onclick="quickTap()">
+👆 TAP!
+</button>
+
+<p id="tapMessage"></p>
+
+</div>
+
+</section>
+
+
+<!-- MEMORY GAME -->
+
+<section class="card">
+
+<h2>🧠 Memory Match</h2>
+
+<p class="description">
+Match all the pairs!
+</p>
+
+<div class="center">
+
+<button onclick="startMemoryGame()">
+NEW GAME
+</button>
+
+</div>
+
+<div id="memoryGrid" class="memory-grid"></div>
+
+<p id="memoryMessage" class="center"></p>
+
+</section>
+
+
+<!-- ACHIEVEMENTS -->
+
+<section class="card">
+
+<h2>🏆 Achievements</h2>
+
+<div class="achievement-grid">
+
+<div id="achievement1" class="badge">
+<div class="badge-icon">🎮</div>
+<h3>First Game</h3>
+<p>Play your first game.</p>
+</div>
+
+<div id="achievement2" class="badge">
+<div class="badge-icon">⭐</div>
+<h3>100 Points</h3>
+<p>Earn 100 points.</p>
+</div>
+
+<div id="achievement3" class="badge">
+<div class="badge-icon">🔥</div>
+<h3>Gamer</h3>
+<p>Play 10 games.</p>
+</div>
+
+<div id="achievement4" class="badge">
+<div class="badge-icon">⚡</div>
+<h3>Fast Hands</h3>
+<p>Reaction under 400ms.</p>
+</div>
+
+<div id="achievement5" class="badge">
+<div class="badge-icon">🧠</div>
+<h3>Memory Master</h3>
+<p>Complete memory game.</p>
+</div>
+
+<div id="achievement6" class="badge">
+<div class="badge-icon">🏅</div>
+<h3>Level 5</h3>
+<p>Reach level 5.</p>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- LEADERBOARD -->
+
+<section class="card">
+
+<h2>🥇 Local Leaderboard</h2>
+
+<div class="leaderboard">
+
+<div class="player">
+<span>🥇 Player One</span>
+<strong>1500</strong>
+</div>
+
+<div class="player">
+<span>🥈 Player Two</span>
+<strong>1200</strong>
+</div>
+
+<div class="player">
+<span>🥉 Player Three</span>
+<strong>900</strong>
+</div>
+
+<div class="player">
+<span>🎮 <span id="playerLeaderboardName">You</span></span>
+<strong id="playerLeaderboardScore">0</strong>
+</div>
+
+</div>
+
+<p class="description">
+Your score is saved on this device.
+</p>
+
+</section>
+
+
+<!-- RESET -->
+
+<section class="card">
+
+<div class="center">
+
+<h2>🔄 Player Controls</h2>
+
+<button onclick="resetEverything()">
+RESET ALL PROGRESS
+</button>
+
+</div>
+
+</section>
+
+
+</div>
+
+
 <footer>
-  🎮 My Gaming Hub © 2026
+
+🎮 My Gaming Hub © 2026
+
 </footer>
 
 
 <script>
 
-  /* =========================
-     POINTS SYSTEM
-  ========================= */
+/* ==========================================
+   PLAYER DATA
+========================================== */
 
-  let totalPoints =
-    Number(localStorage.getItem("gamingPoints")) || 0;
+let playerName =
+localStorage.getItem("playerName") || "Player";
 
-  document.getElementById("totalPoints").textContent =
-    totalPoints;
+let points =
+Number(localStorage.getItem("gamingPoints")) || 0;
 
-  document.getElementById("leaderboardPoints").textContent =
-    totalPoints;
+let xp =
+Number(localStorage.getItem("gamingXP")) || 0;
+
+let gamesPlayed =
+Number(localStorage.getItem("gamesPlayed")) || 0;
+
+let bestReaction =
+Number(localStorage.getItem("bestReaction")) || 0;
 
 
-  function addPoints(amount) {
+/* ==========================================
+   DISPLAY PLAYER
+========================================== */
 
-    totalPoints += amount;
+document.getElementById("nicknameInput").value =
+playerName;
 
-    localStorage.setItem(
-      "gamingPoints",
-      totalPoints
-    );
 
-    document.getElementById("totalPoints").textContent =
-      totalPoints;
+/* ==========================================
+   SAVE NICKNAME
+========================================== */
 
-    document.getElementById("leaderboardPoints").textContent =
-      totalPoints;
+function saveNickname() {
+
+  let name =
+  document.getElementById("nicknameInput").value.trim();
+
+  if (name === "") {
+    alert("Please enter a nickname.");
+    return;
   }
 
+  playerName = name;
 
-  /* =========================
-     REACTION GAME
-  ========================= */
+  localStorage.setItem(
+    "playerName",
+    playerName
+  );
 
-  let reactionStart = 0;
-  let reactionTimeout;
-  let reactionWaiting = false;
+  updateDashboard();
 
-  let bestReaction =
-    Number(localStorage.getItem("bestReaction")) || 0;
+  alert("Nickname saved! 🎮");
+}
+
+
+/* ==========================================
+   ADD POINTS
+========================================== */
+
+function addPoints(amount) {
+
+  points += amount;
+
+  localStorage.setItem(
+    "gamingPoints",
+    points
+  );
+
+  updateDashboard();
+
+}
+
+
+/* ==========================================
+   ADD XP
+========================================== */
+
+function addXP(amount) {
+
+  xp += amount;
+
+  localStorage.setItem(
+    "gamingXP",
+    xp
+  );
+
+  updateDashboard();
+
+}
+
+
+/* ==========================================
+   RECORD GAME
+========================================== */
+
+function recordGame() {
+
+  gamesPlayed++;
+
+  localStorage.setItem(
+    "gamesPlayed",
+    gamesPlayed
+  );
+
+  addXP(10);
+
+  updateDashboard();
+
+}
+
+
+/* ==========================================
+   LEVEL SYSTEM
+========================================== */
+
+function getLevel() {
+
+  return Math.floor(xp / 100) + 1;
+
+}
+
+
+/* ==========================================
+   UPDATE DASHBOARD
+========================================== */
+
+function updateDashboard() {
+
+  let level =
+  getLevel();
+
+  let currentXP =
+  xp % 100;
+
+  let needed =
+  100 - currentXP;
+
+  document.getElementById("welcomeText")
+    .textContent =
+    "Welcome, " + playerName + "! 🎮";
+
+  document.getElementById("points")
+    .textContent =
+    points;
+
+  document.getElementById("xp")
+    .textContent =
+    xp;
+
+  document.getElementById("level")
+    .textContent =
+    level;
+
+  document.getElementById("gamesPlayed")
+    .textContent =
+    gamesPlayed;
+
+  document.getElementById("xpNeeded")
+    .textContent =
+    needed;
+
+  document.getElementById("xpBar")
+    .style.width =
+    currentXP + "%";
+
+  document.getElementById("playerLeaderboardName")
+    .textContent =
+    playerName;
+
+  document.getElementById("playerLeaderboardScore")
+    .textContent =
+    points;
 
   if (bestReaction > 0) {
-    document.getElementById("bestReaction").textContent =
-      bestReaction + " ms";
-  }
-
-
-  function startReactionGame() {
-
-    const area =
-      document.getElementById("reactionArea");
-
-    clearTimeout(reactionTimeout);
-
-    reactionWaiting = true;
-
-    area.className = "game-area waiting";
-
-    area.textContent =
-      "WAIT FOR GREEN...";
-
-    const delay =
-      Math.floor(Math.random() * 3000) + 1500;
-
-    reactionTimeout = setTimeout(function() {
-
-      reactionStart = Date.now();
-
-      area.className = "game-area ready";
-
-      area.textContent =
-        "🟢 TAP NOW!";
-
-    }, delay);
-  }
-
-
-  document
-    .getElementById("reactionArea")
-    .addEventListener("click", function() {
-
-      const area = this;
-
-      if (!reactionWaiting) {
-        return;
-      }
-
-      if (reactionStart === 0) {
-
-        clearTimeout(reactionTimeout);
-
-        area.className = "game-area";
-
-        area.textContent =
-          "⚠️ TOO EARLY!";
-
-        reactionWaiting = false;
-
-        return;
-      }
-
-      const reactionTime =
-        Date.now() - reactionStart;
-
-      reactionStart = 0;
-      reactionWaiting = false;
-
-      area.className = "game-area";
-
-      area.textContent =
-        "🎯 NICE!";
-
-      document.getElementById("lastReaction")
-        .textContent =
-        reactionTime + " ms";
-
-
-      if (
-        bestReaction === 0 ||
-        reactionTime < bestReaction
-      ) {
-
-        bestReaction = reactionTime;
-
-        localStorage.setItem(
-          "bestReaction",
-          bestReaction
-        );
-
-        document.getElementById("bestReaction")
-          .textContent =
-          bestReaction + " ms";
-      }
-
-
-      /* Give points based on performance */
-
-      let points = 0;
-
-      if (reactionTime < 300) {
-        points = 100;
-      } else if (reactionTime < 500) {
-        points = 75;
-      } else if (reactionTime < 700) {
-        points = 50;
-      } else {
-        points = 25;
-      }
-
-      addPoints(points);
-
-      area.textContent =
-        "🎯 +" + points + " POINTS!";
-    });
-
-
-  /* =========================
-     CLICK CHALLENGE
-  ========================= */
-
-  let clickCount = 0;
-  let clickTime = 10;
-  let clickRunning = false;
-  let clickInterval;
-
-
-  function startClickGame() {
-
-    clearInterval(clickInterval);
-
-    clickCount = 0;
-    clickTime = 10;
-    clickRunning = true;
-
-    document.getElementById("clicks")
-      .textContent = clickCount;
-
-    document.getElementById("timer")
-      .textContent = clickTime;
-
-    document.getElementById("clickMessage")
-      .textContent =
-      "🔥 GO! CLICK AS FAST AS YOU CAN!";
-
-    clickInterval = setInterval(function() {
-
-      clickTime--;
-
-      document.getElementById("timer")
-        .textContent = clickTime;
-
-      if (clickTime <= 0) {
-
-        clearInterval(clickInterval);
-
-        clickRunning = false;
-
-        const earnedPoints =
-          clickCount * 5;
-
-        addPoints(earnedPoints);
-
-        document.getElementById("clickMessage")
-          .textContent =
-          "🏁 Finished! +" +
-          earnedPoints +
-          " points!";
-      }
-
-    }, 1000);
-  }
-
-
-  function addClick() {
-
-    if (!clickRunning) {
-      return;
-    }
-
-    clickCount++;
-
-    document.getElementById("clicks")
-      .textContent = clickCount;
-  }
-
-
-  /* =========================
-     RESET SCORES
-  ========================= */
-
-  function resetScores() {
-
-    const confirmReset =
-      confirm(
-        "Reset all your saved scores?"
-      );
-
-    if (!confirmReset) {
-      return;
-    }
-
-    localStorage.removeItem("gamingPoints");
-    localStorage.removeItem("bestReaction");
-
-    totalPoints = 0;
-    bestReaction = 0;
-
-    document.getElementById("totalPoints")
-      .textContent = 0;
-
-    document.getElementById("leaderboardPoints")
-      .textContent = 0;
 
     document.getElementById("bestReaction")
-      .textContent = "--";
+      .textContent =
+      bestReaction + " ms";
 
-    document.getElementById("lastReaction")
-      .textContent = "--";
-
-    alert("Scores reset!");
   }
+
+  updateAchievements();
+
+}
+
+
+/* ==========================================
+   REACTION GAME
+========================================== */
+
+let reactionStart = 0;
+let reactionTimer = null;
+let reactionWaiting = false;
+
+function startReaction() {
+
+  clearTimeout(reactionTimer);
+
+  let area =
+  document.getElementById("reactionArea");
+
+  reactionStart = 0;
+  reactionWaiting = true;
+
+  area.className =
+  "game-area waiting";
+
+  area.textContent =
+  "🔴 WAIT...";
+
+  let delay =
+  Math.floor(Math.random() * 3000) + 1500;
+
+  reactionTimer =
+  setTimeout(function() {
+
+    reactionStart =
+    Date.now();
+
+    area.className =
+    "game-area ready";
+
+    area.textContent =
+    "🟢 TAP NOW!";
+
+  }, delay);
+
+}
+
+
+function reactionClick() {
+
+  if (!reactionWaiting) {
+    return;
+  }
+
+  let area =
+  document.getElementById("reactionArea");
+
+  if (reactionStart === 0) {
+
+    clearTimeout(reactionTimer);
+
+    reactionWaiting = false;
+
+    area.className =
+    "game-area";
+
+    area.textContent =
+    "⚠️ TOO EARLY!";
+
+    return;
+  }
+
+  let time =
+  Date.now() - reactionStart;
+
+  reactionStart = 0;
+  reactionWaiting = false;
+
+  document.getElementById("lastReaction")
+    .textContent =
+    time + " ms";
+
+  if (
+    bestReaction === 0 ||
+    time < bestReaction
+  ) {
+
+    bestReaction = time;
+
+    localStorage.setItem(
+      "bestReaction",
+      bestReaction
+    );
+
+  }
+
+  let earned = 25;
+
+  if (time < 300) {
+    earned = 100;
+  } else if (time < 400) {
+    earned = 80;
+  } else if (time < 500) {
+    earned = 60;
+  }
+
+  addPoints(earned);
+  recordGame();
+
+  area.className =
+  "game-area";
+
+  area.textContent =
+  "🎯 +" + earned + " POINTS!";
+
+}
+
+
+/* ==========================================
+   CLICK FRENZY
+========================================== */
+
+let clickCount = 0;
+let clickTime = 10;
+let clickRunning = false;
+let clickInterval = null;
+
+function startClickGame() {
+
+  clearInterval(clickInterval);
+
+  clickCount = 0;
+  clickTime = 10;
+  clickRunning = true;
+
+  document.getElementById("clickCount")
+    .textContent =
+    0;
+
+  document.getElementById("clickTimer")
+    .textContent =
+    10;
+
+  document.getElementById("clickResult")
+    .textContent =
+    "🔥 GO!";
+
+  clickInterval =
+  setInterval(function() {
+
+    clickTime--;
+
+    document.getElementById("clickTimer")
+      .textContent =
+      clickTime;
+
+    if (clickTime <= 0) {
+
+      clearInterval(clickInterval);
+
+      clickRunning = false;
+
+      let earned =
+      clickCount * 5;
+
+      addPoints(earned);
+
+      recordGame();
+
+      document.getElementById("clickResult")
+        .textContent =
+        "🏁 Finished! +" +
+        earned +
+        " points!";
+
+    }
+
+  }, 1000);
+
+}
+
+
+function clickButton() {
+
+  if (!clickRunning) {
+    return;
+  }
+
+  clickCount++;
+
+  document.getElementById("clickCount")
+    .textContent =
+    clickCount;
+
+}
+
+
+/* ==========================================
+   NUMBER GUESS
+========================================== */
+
+let secretNumber =
+Math.floor(Math.random() * 20) + 1;
+
+let guessAttempts = 0;
+
+function makeGuess() {
+
+  let input =
+  document.getElementById("guessInput");
+
+  let guess =
+  Number(input.value);
+
+  if (
+    guess < 1 ||
+    guess > 20
+  ) {
+
+    document.getElementById("guessMessage")
+      .textContent =
+      "Enter a number from 1 to 20.";
+
+    return;
+  }
+
+  guessAttempts++;
+
+  if (guess === secretNumber) {
+
+    let earned =
+    Math.max(
+      25,
+      100 - (guessAttempts * 10)
+    );
+
+    addPoints(earned);
+
+    recordGame();
+
+    document.getElementById("guessMessage")
+      .textContent =
+      "🎉 Correct! +" +
+      earned +
+      " points!";
+
+    secretNumber =
+    Math.floor(Math.random() * 20) + 1;
+
+    guessAttempts = 0;
+
+  } else if (guess < secretNumber) {
+
+    document.getElementById("guessMessage")
+      .textContent =
+      "⬆️ Too low! Try again.";
+
+  } else {
+
+    document.getElementById("guessMessage")
+      .textContent =
+      "⬇️ Too high! Try again.";
+
+  }
+
+}
+
+
+/* ==========================================
+   QUICK TAP
+========================================== */
+
+let tapCount = 0;
+let tapRunning = false;
+
+function startQuickTap() {
+
+  tapCount = 0;
+  tapRunning = true;
+
+  document.getElementById("tapCount")
+    .textContent =
+    "0 / 20";
+
+  document.getElementById("tapMessage")
+    .textContent =
+    "🔥 Start tapping!";
+
+}
+
+
+function quickTap() {
+
+  if (!tapRunning) {
+    return;
+  }
+
+  tapCount++;
+
+  document.getElementById("tapCount")
+    .textContent =
+    tapCount + " / 20";
+
+  if (tapCount >= 20) {
+
+    tapRunning = false;
+
+    addPoints(75);
+
+    recordGame();
+
+    document.getElementById("tapMessage")
+      .textContent =
+      "🏆 Challenge complete! +75 points!";
+
+  }
+
+}
+
+
+/* ==========================================
+   MEMORY GAME
+========================================== */
+
+const memorySymbols =
+[
+  "🎮",
+  "🎮",
+  "⚽",
+  "⚽",
+  "🚀",
+  "🚀",
+  "👾",
+  "👾"
+];
+
+let memoryFirst = null;
+let memorySecond = null;
+let memoryLocked = false;
+let memoryMatches = 0;
+
+function startMemoryGame() {
+
+  let symbols =
+  [...memorySymbols];
+
+  symbols.sort(
+    () => Math.random() - 0.5
+  );
+
+  memoryFirst = null;
+  memorySecond = null;
+  memoryLocked = false;
+  memoryMatches = 0;
+
+  let grid =
+  document.getElementById("memoryGrid");
+
+  grid.innerHTML = "";
+
+  document.getElementById("memoryMessage")
+    .textContent =
+    "";
+
+  symbols.forEach(function(symbol, index) {
+
+    let card =
+    document.createElement("div");
+
+    card.className =
+    "memory-card";
+
+    card.dataset.symbol =
+    symbol;
+
+    card.dataset.index =
+    index;
+
+    card.textContent =
+    "❓";
+
+    card.onclick =
+    function() {
+      flipMemoryCard(card);
+    };
+
+    grid.appendChild(card);
+
+  });
+
+}
+
+
+function flipMemoryCard(card) {
+
+  if (
+    memoryLocked ||
+    card.classList.contains("flipped") ||
+    card.classList.contains("matched")
+  ) {
+    return;
+  }
+
+  card.classList.add("flipped");
+
+  card.textContent =
+  card.dataset.symbol;
+
+  if (!memoryFirst) {
+
+    memoryFirst =
+    card;
+
+    return;
+
+  }
+
+  memorySecond =
+  card;
+
+  memoryLocked =
+  true;
+
+  if (
+    memoryFirst.dataset.symbol ===
+    memorySecond.dataset.symbol
+  ) {
+
+    memoryFirst.classList.add("matched");
+    memorySecond.classList.add("matched");
+
+    memoryMatches++;
+
+    memoryFirst = null;
+    memorySecond = null;
+    memoryLocked = false;
+
+    if (memoryMatches === 4) {
+
+      addPoints(150);
+
+      recordGame();
+
+      document.getElementById("memoryMessage")
+        .textContent =
+        "🧠 Memory Master! +150 points!";
+
+    }
+
+  } else {
+
+    setTimeout(function() {
+
+      memoryFirst.classList.remove("flipped");
+      memorySecond.classList.remove("flipped");
+
+      memoryFirst.textContent =
+      "❓";
+
+      memorySecond.textContent =
+      "❓";
+
+      memoryFirst = null;
+      memorySecond = null;
+
+      memoryLocked = false;
+
+    }, 800);
+
+  }
+
+}
+
+
+/* ==========================================
+   ACHIEVEMENTS
+========================================== */
+
+function updateAchievements() {
+
+  if (gamesPlayed >= 1) {
+
+    document.getElementById("achievement1")
+      .classList.add("unlocked");
+
+  }
+
+  if (points >= 100) {
+
+    document.getElementById("achievement2")
+      .classList.add("unlocked");
+
+  }
+
+  if (gamesPlayed >= 10) {
+
+    document.getElementById("achievement3")
+      .classList.add("unlocked");
+
+  }
+
+  if (
+    bestReaction > 0 &&
+    bestReaction < 400
+  ) {
+
+    document.getElementById("achievement4")
+      .classList.add("unlocked");
+
+  }
+
+  if (localStorage.getItem("memoryMaster") === "true") {
+
+    document.getElementById("achievement5")
+      .classList.add("unlocked");
+
+  }
+
+  if (getLevel() >= 5) {
+
+    document.getElementById("achievement6")
+      .classList.add("unlocked");
+
+  }
+
+}
+
+
+/* ==========================================
+   RESET
+========================================== */
+
+function resetEverything() {
+
+  let answer =
+  confirm(
+    "Are you sure you want to reset all your progress?"
+  );
+
+  if (!answer) {
+    return;
+  }
+
+  localStorage.clear();
+
+  playerName = "Player";
+  points = 0;
+  xp = 0;
+  gamesPlayed = 0;
+  bestReaction = 0;
+
+  document.getElementById("nicknameInput")
+    .value = "";
+
+  document.getElementById("bestReaction")
+    .textContent = "--";
+
+  document.getElementById("lastReaction")
+    .textContent = "--";
+
+  document.querySelectorAll(".badge")
+    .forEach(function(badge) {
+
+      badge.classList.remove("unlocked");
+
+    });
+
+  updateDashboard();
+
+  alert("Progress reset! 🎮");
+
+}
+
+
+/* ==========================================
+   INITIALIZE
+========================================== */
+
+updateDashboard();
+
+startMemoryGame();
 
 </script>
 
